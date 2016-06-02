@@ -1,0 +1,147 @@
+= GR8 CRM - Project Management User Interface Plugin
+Göran Ehrsson <goran@technipelago.se>
+:description: Official documentation for the GR8 CRM Project management User Interface Plugin
+:keywords: groovy, grails, crm, gr8crm, documentation
+:toc:
+:numbered:
+:icons: font
+:imagesdir: ./images
+:source-highlighter: prettify
+:homepage: http://gr8crm.github.io
+:gr8crm: GR8 CRM
+:gr8source: https://github.com/technipelago/grails-crm-project-ui
+:license: This plugin is licensed with http://www.apache.org/licenses/LICENSE-2.0.html[Apache License version 2.0]
+
+== Introduction
+
+{gr8crm} is a set of http://www.grails.org/[Grails Web Application Framework]
+plugins that makes it easy to develop web applications with CRM functionality.
+
+You can find more information about {gr8crm} on the main documentation site {homepage}.
+
+=== Customer Relationship Management
+
+Customer relationship management (CRM) is a system for managing a company’s interactions with current and future customers.
+It involves using technology to organize, automate and synchronize sales, marketing, customer service, and technical support.
+http://en.wikipedia.org/wiki/Customer_relationship_management[Wikipedia]
+
+The {gr8crm} "Ecosystem" currently contains over 40 Grails plugins. For a complete list of plugins see {homepage}.
+
+Each {gr8crm} plugin defines a http://martinfowler.com/bliki/BoundedContext.html[Bounded Context]
+that focus on one specific domain, for example *contact*, *project* or *document*.
+
+== Project Management User Interface Plugin
+
+The `crm-project-ui` plugin provides a Twitter Bootstrap user interface for managing all kind of projects.
+It depends on the `crm-project` plugin for low level services and persistence.
+
+TIP: The crm-project-ui plugin does not contain support for monetary information like project value or currency.
+For monetary project like sales leads and opportunities you should use the +crm-sales+ and +crm-sales-ui+ plugins.
+
+image::crm-project-show.png[Example project, role="thumb"]
+
+== CRUD user interface
+
+The plugin provide user interface for creating and updating projects. It follows the same CRUD workflow
+as other {gr8crm} `-ui` plugins.
+
+=== Create new project
+
+You can create a project from all pages where you can search, list or view projects.
+Just press the [New Project] button and enter information in the create project form.
+
+image::crm-project-create.png[Create new project]
+
+=== Edit existing project
+
+When you view an existing project you can alter information by pressing the [Edit] button.
+
+image::crm-project-edit.png[Edit existing project]
+
+=== Find projects
+
+The search form have several input fields where you can enter search criteria. When you hit [Search] you
+will either be presented with a list of matching projects or if there is only one match it will be
+displayed immediately.
+
+image::crm-project-find.png[Search projects]
+
+=== List projects
+
+When you search for projects and more than one match you search criteria, a list will displayed where
+you can select a project to view details.
+
+image::crm-project-list.png[List projects]
+
+== Project Roles
+
+A project can have multiple people assigned to different roles. You can specify the project manager that will
+lead the project, or the sales support staff that are assigned to the project. As an administrator you can add as
+many role types as you want. These roles can then be used to assign people to the project.
+
+image::crm-project-roles.png[Multiple project roles]
+
+To add a role other than customer and contact you press the [Add role] button on the Roles tab. You can add contacts
+already in your address book or create a new contact by entering new name.
+The new contact will be added to your address book when you save the project.
+
+image::crm-project-role.png[Add new role]
+
+== Project resources
+
+When creating or updating a project you can select the responsible project manager from a dropdown list.
+This dropdown list is populated using an application event `crmTenant.getUsers`. You must add an event listener in
+one of your application services that listens to this event and returns a list of users (project people).
+
+For a list of *all* registered users you can add something like this to a service in your application:
+
+[source,groovy]
+.MyApplicationService.groovy
+----
+@Listener(namespace="crmTenant", topic="getUsers")
+def listAllUsersInTenant(data) {
+    CrmUserRole.createCriteria().list(sort: 'user.name', order: 'asc') {
+        resultTransformer CriteriaSpecification.ALIAS_TO_ENTITY_MAP
+        projections {
+            user {
+                property('id', 'id')
+                property('guid', 'guid')
+                property('username', 'username')
+                property('name', 'name')
+                property('email', 'email')
+            }
+        }
+        role {
+            eq('tenantId', data.tenant)
+        }
+    }
+}
+----
+
+== Configuration
+
+The `crm-project-ui` plugin can be configured with the following parameters.
+
+[options="header"]
+|===
+| Key                        | Description                                                   | Default value
+| crm.project.export.timeout | Timeout (in seconds) waiting for export process to finish     | 60
+|===
+
+== Changes
+
+2.4.0:: First public release
+
+== License
+
+{license}
+
+== Source Code
+
+The source code for this plugin is available at {gr8source}
+
+== Contributing
+
+Please report {gr8source}/issues[issues or suggestions].
+
+Want to improve the plugin: Fork the {gr8source}[repository] and send a pull request.
