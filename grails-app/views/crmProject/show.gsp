@@ -227,7 +227,7 @@
 
 <g:if test="${crmProject.description}">
     <div class="row-fluid">
-        <div class="span7">
+        <div class="span9">
             <p style="background-color: #fefefe; border: 1px solid #f0f0f0; border-radius: 3px;">
                 <g:decorate>${crmProject.description}</g:decorate>
             </p>

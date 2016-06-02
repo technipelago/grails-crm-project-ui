@@ -14,7 +14,7 @@
     </g:else>
 
     <g:message code="crmProject.summary.status"/>
-    <g:fieldValue bean="${bean}" field="status"/>
+    <strong><g:fieldValue bean="${bean}" field="status"/></strong>
 
     <g:if test="${bean.date2}">
         <g:message code="crmProject.summary.date2.label"/> <strong><g:formatDate date="${bean.date2}" type="date" style="long"/></strong>.
