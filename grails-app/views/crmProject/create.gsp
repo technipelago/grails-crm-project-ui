@@ -66,8 +66,8 @@
 
 <body>
 
-<crm:header title="crmProject.create.title" subtitle="${customer?.encodeAsHTML()}"
-            args="[entityName, crmProject]"/>
+<crm:header title="crmProject.create.title" subtitle="${reference ?: customer}"
+            args="[entityName, crmProject, reference, customer]"/>
 
 <g:hasErrors bean="${crmProject}">
     <crm:alert class="alert-error">
@@ -81,6 +81,8 @@
 </g:hasErrors>
 
 <g:form action="create">
+
+    <g:hiddenField name="reference" value="${params.reference}"/>
 
     <f:with bean="crmProject">
 

@@ -86,10 +86,12 @@
 <div class="span9">
 
 <header class="page-header clearfix">
+    <img src="${resource(dir: 'images', file: 'project-icon.png')}" class="avatar pull-right"
+         width="64" height="64"/>
     <h1>
-        ${crmProject.encodeAsHTML()}
+        ${crmProject}
         <crm:favoriteIcon bean="${crmProject}"/>
-        <small>${customer?.encodeAsHTML()}</small>
+        <small>${reference ?: customer}</small>
     </h1>
 </header>
 
@@ -165,6 +167,12 @@
             <g:if test="${crmProject.username}">
                 <dt><g:message code="crmProject.username.label" default="Responsible"/></dt>
                 <dd><crm:user username="${crmProject.username}">${name}</crm:user></dd>
+
+            </g:if>
+
+            <g:if test="${reference}">
+                <dt><g:message code="crmProject.ref.label" default="Reference"/></dt>
+                <dd><crm:referenceLink reference="${reference}"/></dd>
 
             </g:if>
 

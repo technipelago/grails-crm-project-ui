@@ -18,6 +18,7 @@ class CrmProjectController {
 
     static allowedMethods = [list: ['GET', 'POST'], create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    def crmCoreService
     def crmSecurityService
     def crmProjectService
     def crmContactService
@@ -91,7 +92,8 @@ class CrmProjectController {
             return
         }
         def metadata = [statusList: crmProjectService.listProjectStatus(null)]
-        [crmProject: crmProject, customer: crmProject.customer, contact: crmProject.contact,
+        [crmProject: crmProject,
+         reference: crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
          metadata       : metadata, roles: crmProject.roles.sort {
             it.type.orderIndex
         }, selection    : params.getSelectionURI()]
@@ -106,6 +108,7 @@ class CrmProjectController {
         if (!params.date1) {
             params.date1 = formatDate(type: 'date', date: new Date())
         }
+        def reference = params.reference ? crmCoreService.getReference(params.reference) : null
         def metadata = [:]
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
@@ -129,7 +132,8 @@ class CrmProjectController {
                         customer = crmContactService.getContact(customerId)
                     }
                 }
-                return [crmProject: crmProject, metadata: metadata, user: currentUser, customer: customer, contact: contact]
+                return [crmProject: crmProject, metadata: metadata, user: currentUser,
+                        reference: reference, customer: customer, contact: contact]
             case 'POST':
                 def customer
                 def contact
@@ -152,7 +156,7 @@ class CrmProjectController {
                 } else {
                     def user = crmSecurityService.getUserInfo(params.username ?: crmProject.username)
                     render view: 'create', model: [crmProject: crmProject, metadata: metadata, user: user,
-                                                   customer: customer, contact: contact]
+                                                   reference: reference, customer: customer, contact: contact]
                 }
                 break
         }
@@ -342,7 +346,6 @@ class CrmProjectController {
         if (params.person) {
             params.person = params.boolean('person')
         }
-        println params
         def result = crmContactService.list(params, [max: 100]).collect {
             def contact = it.primaryContact ?: it.parent
             [it.fullName, it.id, it.toString(), contact?.id, contact?.toString(), it.firstName, it.lastName, it.address.toString(), it.telephone, it.email]
