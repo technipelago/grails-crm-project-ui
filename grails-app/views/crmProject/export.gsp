@@ -4,36 +4,62 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmProject.label', default: 'Project')}"/>
     <title><g:message code="crmProject.export.title" args="[entityName]"/></title>
+    <r:script>
+        $(document).ready(function () {
+            $('h4 a').click(function (ev) {
+                ev.preventDefault();
+                $(this).closest('form').submit();
+            });
+            $('.crm-confirm').submit(function(ev) {
+                if(confirm('Press ok to start print/export')) {
+                    return true;
+                }
+                ev.preventDefault();
+                return false;
+            });
+        });
+    </r:script>
+    <style type="text/css">
+    .crm-layout {
+        border-top: 1px solid #ccc;
+        margin-bottom: 0;
+    }
+    </style>
 </head>
 
 <body>
 
 <crm:header title="crmProject.export.title" subtitle="crmProject.export.subtitle" args="[entityName]"/>
 
-<g:each in="${layouts}" var="l">
-    <g:form action="export" class="well">
+<g:each in="${layouts?.sort { it.order }}" var="l">
+    <g:form action="export" class="crm-layout ${l.confirm ? 'crm-confirm' : ''}">
+        <g:each in="${l}" var="ly">
+            <input type="hidden" name="${ly.key}" value="${ly.value}"/>
+        </g:each>
+        <input type="hidden" name="id" value="${id}"/>
         <input type="hidden" name="q" value="${select.encode(selection: selection)}"/>
-        <input type="hidden" name="ns" value="${l.ns}"/>
-        <input type="hidden" name="topic" value="${l.topic}"/>
-        <input type="hidden" name="layout" value="${l.layout}"/>
 
         <div class="row-fluid">
             <div class="span7">
-                <h3>${l.name?.encodeAsHTML()}</h3>
+                <h4><a href="#">${l.name?.encodeAsHTML()}</a></h4>
 
-                <p class="lead">
+                <p>
                     ${l.description?.encodeAsHTML()}
                 </p>
-
-                <button type="submit" class="btn btn-info">
-                    <i class="icon-ok icon-white"></i>
-                    <g:message code="crmProject.button.select.label" default="Select"/>
-                </button>
             </div>
 
-            <div class="span5">
-                <g:if test="${l.thumbnail}">
-                    <img src="${l.thumbnail}" class="pull-right"/>
+            <div class="span2" style="padding-top: 10px;">
+                <button type="submit" class="btn ${l.confirm ? 'btn-warning' : 'btn-info'}">
+                    <i class="icon-ok icon-white"></i>
+                    <g:message code="crmExport.button.select.label" default="Select"/>
+                </button>
+                </div>
+            <div class="span2" style="padding-top: 10px;">
+                <g:if test="${l.save}">
+                    <label class="checkbox">
+                        <g:checkBox name="save"/>
+                        <g:message code="crmExport.save.output" default="Spara rapporten"/>
+                    </label>
                 </g:if>
             </div>
         </div>
@@ -44,7 +70,7 @@
 <div class="form-actions">
     <select:link action="list" selection="${selection}" class="btn">
         <i class="icon-remove"></i>
-        <g:message code="crmProject.button.back.label" default="Back"/>
+        <g:message code="crmTask.button.back.label" default="Back"/>
     </select:link>
 </div>
 
