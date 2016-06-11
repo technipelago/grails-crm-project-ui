@@ -3,6 +3,7 @@ package grails.plugins.crm.project
 import grails.converters.JSON
 import grails.plugins.crm.contact.CrmContact
 import grails.plugins.crm.core.DateUtils
+import grails.plugins.crm.core.SearchUtils
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
 import grails.plugins.crm.core.CrmValidationException
@@ -91,8 +92,9 @@ class CrmProjectController {
             redirect action: 'list'
             return
         }
+        def children = crmProject.children ?: []
         def metadata = [statusList: crmProjectService.listProjectStatus(null)]
-        [crmProject: crmProject,
+        [crmProject: crmProject, children: children,
          reference: crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
          metadata       : metadata, roles: crmProject.roles.sort {
             it.type.orderIndex
@@ -326,6 +328,26 @@ class CrmProjectController {
         } else {
             redirect(action: 'show', id: id)
         }
+    }
+
+    def autocompleteProject(Long id, String q) {
+        def result = CrmProject.createCriteria().list(max: 100) {
+            eq('tenantId', TenantUtils.tenant)
+            isNull('parent')
+            if (id) {
+                ne('id', id)
+            }
+            if (q) {
+                or {
+                    eq('number', q)
+                    ilike('name', SearchUtils.wildcard(q))
+                }
+            }
+        }.collect {
+            [it.name, it.id, it.number, it.status.toString(), it.customer?.toString(), it.contact?.toString()]
+        }
+        WebUtils.shortCache(response)
+        render result as JSON
     }
 
     def autocompleteContact() {

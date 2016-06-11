@@ -16,6 +16,9 @@
         <tr>
 
             <td>
+                <a class="crm-edit" data-crm-id="${role.id}" href="#" title="Click to edit role details">
+                    <i class="icon-pencil"></i>
+                </a>
                 <g:link mapping="crm-contact-show" id="${crmContact.id}">
                     ${fieldValue(bean: crmContact, field: "name")}
                 </g:link>

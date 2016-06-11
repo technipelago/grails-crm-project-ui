@@ -14,6 +14,8 @@
 <table class="table table-striped">
     <thead>
     <tr>
+        <g:sortableColumn property="number"
+                          title="${message(code: 'crmProject.number.label', default: '#')}"/>
         <g:sortableColumn property="customer.name"
                           title="${message(code: 'crmProject.customer.label', default: 'Customer')}"/>
         <g:sortableColumn property="name"
@@ -30,6 +32,12 @@
     <tbody>
     <g:each in="${crmProjectList}" var="crmProject">
         <tr>
+
+            <td>
+                <select:link action="show" id="${crmProject.id}" selection="${selection}">
+                    ${fieldValue(bean: crmProject, field: "number")}
+                </select:link>
+            </td>
 
             <td>
                 <select:link action="show" id="${crmProject.id}" selection="${selection}">

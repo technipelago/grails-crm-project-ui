@@ -42,6 +42,7 @@
                 }
             }
         });
+
         $("input[name='contact.name']").autocomplete("${createLink(action: 'autocompleteContact', params: [person: true])}", {
             remoteDataType: 'json',
             preventDefaultReturn: true,
@@ -57,6 +58,23 @@
             },
             onNoMatch: function() {
                 $("input[name='contact.id']").val('');
+            }
+        });
+
+        // Parent project.
+        $("input[name='parent.name']").autocomplete("${createLink(controller: 'crmProject', action: 'autocompleteProject')}", {
+            remoteDataType: 'json',
+            preventDefaultReturn: true,
+            minChars: 1,
+            selectFirst: true,
+            useCache: false,
+            filter: false,
+            extraParams: { id: "${crmProject.id}"},
+            onItemSelect: function(item) {
+                $("input[name='parent.id']").val(item.data[0]);
+            },
+            onNoMatch: function() {
+                $("input[name='parent.id']").val('');
             }
         });
 
@@ -122,15 +140,14 @@
                                         <g:textField name="number" value="${crmProject.number}" class="span6"/>
                                     </div>
                                 </div>
+
                                 <div class="control-group">
                                     <label class="control-label">
-                                        <g:message code="crmProject.status.label"/>
+                                        <g:message code="crmProject.parent.label"/>
                                     </label>
-
                                     <div class="controls">
-                                        <g:select name="status.id" from="${metadata.statusList}"
-                                                  optionKey="id"
-                                                  value="${crmProject.status?.id}" class="span11"/>
+                                        <input type="hidden" name="parent.id" value="${crmProject.parent?.id}"/>
+                                        <g:textField name="parent.name" value="${crmProject.parent?.name}" class="span10" autocomplete="off"/>
                                     </div>
                                 </div>
                             </div>
@@ -155,6 +172,18 @@
                                                      class="span11"/>
                                         <g:hiddenField name="contact.id"
                                                        value="${contact?.id}"/>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="control-label">
+                                        <g:message code="crmProject.status.label"/>
+                                    </label>
+
+                                    <div class="controls">
+                                        <g:select name="status.id" from="${metadata.statusList}"
+                                                  optionKey="id"
+                                                  value="${crmProject.status?.id}" class="span11"/>
                                     </div>
                                 </div>
 

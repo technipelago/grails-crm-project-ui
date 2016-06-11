@@ -17,7 +17,7 @@
         <div class="control-group">
             <label class="control-label"><g:message code="crmProjectRole.contact.label"/></label>
             <div class="controls">
-                <input type="hidden" name="related" style="width: 75%;"/>
+                <input type="text" name="related" value="${bean.contact}" readonly="readonly" style="width: 75%;"/>
             </div>
         </div>
 

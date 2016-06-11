@@ -9,7 +9,24 @@
     <r:script>
     $(document).ready(function() {
         <crm:datepicker selector=".date"/>
+
+        // Parent project.
+        $("input[name='parent.name']").autocomplete("${createLink(controller: 'crmProject', action: 'autocompleteProject')}", {
+            remoteDataType: 'json',
+            preventDefaultReturn: true,
+            minChars: 1,
+            selectFirst: true,
+            useCache: false,
+            filter: false,
+            extraParams: { id: "${crmProject.id}"},
+            onItemSelect: function(item) {
+                $("input[name='parent.id']").val(item.data[0]);
+            },
+            onNoMatch: function() {
+                $("input[name='parent.id']").val('');
+            }
         });
+    });
     </r:script>
 </head>
 
@@ -73,6 +90,21 @@
 
                             <div class="control-group">
                                 <label class="control-label">
+                                    <g:message code="crmProject.parent.label"/>
+                                </label>
+                                <div class="controls">
+                                    <input type="hidden" name="parent.id" value="${crmProject.parent?.id}"/>
+                                    <g:textField name="parent.name" value="${crmProject.parent?.name}" class="span10" autocomplete="off"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span4">
+                        <div class="row-fluid">
+
+                            <div class="control-group">
+                                <label class="control-label">
                                     <g:message code="crmProject.status.label"/>
                                 </label>
 
@@ -82,11 +114,6 @@
                                               value="${crmProject.status?.id}" class="span11"/>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="span4">
-                        <div class="row-fluid">
 
                             <div class="control-group">
                                 <label class="control-label">
