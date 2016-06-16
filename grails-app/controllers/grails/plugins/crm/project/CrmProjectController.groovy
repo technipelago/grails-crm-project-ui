@@ -8,6 +8,7 @@ import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
 import grails.plugins.crm.core.CrmValidationException
 import grails.transaction.Transactional
+import org.springframework.dao.DataIntegrityViolationException
 
 import javax.servlet.http.HttpServletResponse
 import java.util.concurrent.TimeoutException
@@ -206,6 +207,37 @@ class CrmProjectController {
                     render view: 'edit', model: [crmProject: crmProject, metadata: metadata, user: user]
                 }
                 break
+        }
+    }
+
+    @Transactional
+    def delete(Long id) {
+        def crmProject = CrmProject.findByIdAndTenantId(id, TenantUtils.tenant)
+        if (!crmProject) {
+            flash.error = message(code: 'crmProject.not.found.message', args: [message(code: 'crmProject.label', default: 'Project'), id])
+            redirect action: 'index'
+            return
+        }
+
+        def children = CrmProject.countByParent(crmProject)
+        if (children) {
+            flash.error = message(code: 'crmProject.delete.childrenExists.message', args: [message(code: 'crmProject.label', default: 'Project'), id, children])
+            redirect action: 'show', id: id, fragment: 'children'
+            return
+        }
+
+        try {
+            def parentId = crmProject.parentId
+            def tombstone = crmProjectService.deleteProject(crmProject)
+            flash.warning = message(code: 'crmProject.deleted.message', args: [message(code: 'crmProject.label', default: 'Project'), tombstone])
+            if(parentId) {
+                redirect action: 'show', id: parentId, fragment: 'children'
+            } else {
+                redirect action: 'index'
+            }
+        } catch (DataIntegrityViolationException e) {
+            flash.error = message(code: 'crmProject.not.deleted.message', args: [message(code: 'crmProject.label', default: 'Project'), params.id])
+            redirect action: 'show', id: params.id
         }
     }
 
