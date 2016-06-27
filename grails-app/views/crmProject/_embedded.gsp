@@ -9,7 +9,7 @@
     </tr>
     </thead>
     <tbody>
-    <g:each in="${result}" var="roleInstance">
+    <g:each in="${list}" var="roleInstance">
         <g:set var="project" value="${roleInstance.project}"/>
         <tr>
 
