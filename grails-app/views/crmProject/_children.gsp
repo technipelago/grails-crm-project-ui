@@ -6,10 +6,11 @@
         <th><g:message code="crmProject.status.label"/></th>
         <th><g:message code="crmProject.date1.label"/></th>
         <th><g:message code="crmProject.date2.label"/></th>
+        <th class="money"><g:message code="crmProject.value.label" default="Value"/></th>
     </tr>
     </thead>
     <tbody>
-    <g:each in="${bean.children}" var="crmProject">
+    <g:each in="${children}" var="crmProject">
         <tr class="${crmProject.active ? '' : 'disabled'}">
             <td>
                 <g:link controller="crmProject" action="show" id="${crmProject.id}">
@@ -32,6 +33,10 @@
 
             <td class="nowrap">
                 <g:formatDate type="date" date="${crmProject.date2}"/>
+            </td>
+            <td class="money nowrap">
+                <g:formatNumber number="${crmProject.value}" maxFractionDigits="0"
+                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
             </td>
         </tr>
     </g:each>

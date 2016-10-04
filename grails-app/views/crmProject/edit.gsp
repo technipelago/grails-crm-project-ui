@@ -127,6 +127,22 @@
                                               value="${crmProject.username}" class="span11"/>
                                 </div>
                             </div>
+
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <g:message code="crmProject.value.label"/>
+                                </label>
+
+                                <div class="controls">
+
+                                    <g:textField name="value" readonly="${crmProject.children ? true : false}"
+                                                 value="${fieldValue(bean: crmProject, field: 'value')}"
+                                                 class="span6"/>
+                                    <g:select from="${metadata.currencyList}" name="currency"
+                                              value="${crmProject.currency}" class="span4"/>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 

@@ -199,6 +199,14 @@
                                                   value="${crmProject.username}" class="span11"/>
                                     </div>
                                 </div>
+
+                                <f:field property="value" label="crmProject.value.label">
+                                    <g:textField name="value"
+                                                 value="${fieldValue(bean: crmProject, field: 'value')}"
+                                                 class="span6"/>
+                                    <g:select from="${metadata.currencyList}" name="currency"
+                                              value="${crmProject.currency}" class="span4"/>
+                                </f:field>
                             </div>
                         </div>
 

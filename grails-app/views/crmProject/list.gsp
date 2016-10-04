@@ -26,7 +26,8 @@
 
         <g:sortableColumn property="date2"
                           title="${message(code: 'crmProject.date2.label', default: 'Order Date')}"/>
-
+        <g:sortableColumn property="value"
+                          title="${message(code: 'crmProject.value.label', default: 'Value')}"/>
     </tr>
     </thead>
     <tbody>
@@ -59,6 +60,10 @@
                 <g:formatDate type="date" date="${crmProject.date2}"/>
             </td>
 
+            <td class="money nowrap">
+                <g:formatNumber number="${crmProject.value}" maxFractionDigits="0"
+                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
+            </td>
         </tr>
     </g:each>
     </tbody>

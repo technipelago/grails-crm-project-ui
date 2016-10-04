@@ -95,7 +95,7 @@ class CrmProjectController {
         }
         def children = crmProject.children ?: []
         def metadata = [statusList: crmProjectService.listProjectStatus(null)]
-        [crmProject: crmProject, children: children,
+        [crmProject: crmProject, children: children.sort{it.number},
          reference: crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
          metadata       : metadata, roles: crmProject.roles.sort {
             it.type.orderIndex
@@ -111,10 +111,14 @@ class CrmProjectController {
         if (!params.date1) {
             params.date1 = formatDate(type: 'date', date: new Date())
         }
+        if (!params.currency) {
+            params.currency = crmTenant.getOption('currency') ?: (grailsApplication.config.crm.currency.default ?: 'EUR')
+        }
         def reference = params.reference ? crmCoreService.getReference(params.reference) : null
         def metadata = [:]
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
+        metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
 
         switch (request.method) {
             case 'GET':
@@ -153,7 +157,7 @@ class CrmProjectController {
                 }
 
                 if (ok) {
-                    event(for: "crmProject", topic: "created", fork: false, data: [id: crmProject.id, tenant: crmProject.tenantId, user: currentUser?.username])
+                    event(for: "crmProject", topic: "created", fork: true, data: [id: crmProject.id, tenant: crmProject.tenantId, user: currentUser?.username])
                     flash.success = message(code: 'crmProject.created.message', args: [message(code: 'crmProject.label', default: 'Project'), crmProject.toString()])
                     redirect action: 'show', id: crmProject.id
                 } else {
@@ -179,6 +183,7 @@ class CrmProjectController {
         def metadata = [:]
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
+        metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
 
         switch (request.method) {
             case 'GET':
@@ -199,7 +204,7 @@ class CrmProjectController {
                 }
 
                 if (ok) {
-                    event(for: "crmProject", topic: "updated", fork: false, data: [id: crmProject.id, tenant: crmProject.tenantId, user: currentUser?.username])
+                    event(for: "crmProject", topic: "updated", fork: true, data: [id: crmProject.id, tenant: crmProject.tenantId, user: currentUser?.username])
                     flash.success = message(code: 'crmProject.updated.message', args: [message(code: 'crmProject.label', default: 'Project'), crmProject.toString()])
                     redirect action: 'show', id: crmProject.id
                 } else {

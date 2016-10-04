@@ -192,6 +192,14 @@
 
                                 </g:if>
 
+                                <dt><g:message code="crmProject.value.label" default="Value"/></dt>
+
+                                <dd>
+                                    <g:formatNumber number="${crmProject.value}"
+                                                    type="currency"
+                                                    currencyCode="${crmProject.currency ?: 'EUR'}"
+                                                    maxFractionDigits="0"/>
+                                </dd>
                             </dl>
 
                         </div>
