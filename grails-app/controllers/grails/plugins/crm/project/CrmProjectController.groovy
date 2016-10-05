@@ -1,12 +1,7 @@
 package grails.plugins.crm.project
 
 import grails.converters.JSON
-import grails.plugins.crm.contact.CrmContact
-import grails.plugins.crm.core.DateUtils
-import grails.plugins.crm.core.SearchUtils
-import grails.plugins.crm.core.TenantUtils
-import grails.plugins.crm.core.WebUtils
-import grails.plugins.crm.core.CrmValidationException
+import grails.plugins.crm.core.*
 import grails.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -95,11 +90,23 @@ class CrmProjectController {
         }
         def children = crmProject.children ?: []
         def metadata = [statusList: crmProjectService.listProjectStatus(null)]
-        [crmProject: crmProject, children: children.sort{it.number},
-         reference: crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
-         metadata       : metadata, roles: crmProject.roles.sort {
+        def items = crmProject.items ?: []
+
+        [crmProject : crmProject, items: items.sort { it.orderIndex }, children: children.sort { it.number },
+         reference  : crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
+         metadata   : metadata, roles: crmProject.roles.sort {
             it.type.orderIndex
-        }, selection    : params.getSelectionURI()]
+        }, selection: params.getSelectionURI()]
+    }
+
+    private List getVatOptions() {
+        getVatList().collect {
+            [label: "${it}%", value: (it / 100).doubleValue()]
+        }
+    }
+
+    private List<Number> getVatList() {
+        grailsApplication.config.crm.currency.vat.list ?: [0]
     }
 
     @Transactional
@@ -119,14 +126,15 @@ class CrmProjectController {
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
         metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
+        metadata.vatList = getVatOptions()
 
         switch (request.method) {
             case 'GET':
-                bindDate(crmProject, 'date1', params.remove('date1'), currentUser?.timezone)
-                bindDate(crmProject, 'date2', params.remove('date2'), currentUser?.timezone)
-                bindDate(crmProject, 'date3', params.remove('date3'), currentUser?.timezone)
-                bindDate(crmProject, 'date4', params.remove('date4'), currentUser?.timezone)
-                bindData(crmProject, params, [include: CrmProject.BIND_WHITELIST])
+                bindData(crmProject, params, [include: CrmProject.BIND_WHITELIST, exclude: ['date1', 'date2', 'date3', 'date4']])
+                bindDate(crmProject, 'date1', params.date1, currentUser?.timezone)
+                bindDate(crmProject, 'date2', params.date2, currentUser?.timezone)
+                bindDate(crmProject, 'date3', params.date3, currentUser?.timezone)
+                bindDate(crmProject, 'date4', params.date4, currentUser?.timezone)
                 crmProject.tenantId = tenant
                 if (!crmProject.username) {
                     crmProject.username = currentUser?.username
@@ -139,8 +147,10 @@ class CrmProjectController {
                         customer = crmContactService.getContact(customerId)
                     }
                 }
-                return [crmProject: crmProject, metadata: metadata, user: currentUser,
-                        reference: reference, customer: customer, contact: contact]
+                def items = crmProject.items ?: []
+                return [crmProject: crmProject, items: items.sort { it.orderIndex },
+                        metadata  : metadata, user: currentUser,
+                        reference : reference, customer: customer, contact: contact]
             case 'POST':
                 def customer
                 def contact
@@ -161,9 +171,11 @@ class CrmProjectController {
                     flash.success = message(code: 'crmProject.created.message', args: [message(code: 'crmProject.label', default: 'Project'), crmProject.toString()])
                     redirect action: 'show', id: crmProject.id
                 } else {
+                    def items = crmProject.items ?: []
                     def user = crmSecurityService.getUserInfo(params.username ?: crmProject.username)
-                    render view: 'create', model: [crmProject: crmProject, metadata: metadata, user: user,
-                                                   reference: reference, customer: customer, contact: contact]
+                    render view: 'create', model: [crmProject: crmProject, items: items.sort { it.orderIndex },
+                                                   metadata  : metadata, user: user,
+                                                   reference : reference, customer: customer, contact: contact]
                 }
                 break
         }
@@ -180,39 +192,60 @@ class CrmProjectController {
             redirect action: 'index'
             return
         }
-        def metadata = [:]
-        metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
-        metadata.userList = crmSecurityService.getTenantUsers()
-        metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
 
-        switch (request.method) {
-            case 'GET':
-                return [crmProject: crmProject, metadata: metadata, user: currentUser]
-            case 'POST':
-                def ok = true
-                CrmProject.withTransaction { tx ->
-                    //crmProjectService.fixCustomerParams(params)
-                    bindDate(crmProject, 'date1', params.remove('date1'), currentUser?.timezone)
-                    bindDate(crmProject, 'date2', params.remove('date2'), currentUser?.timezone)
-                    bindDate(crmProject, 'date3', params.remove('date3'), currentUser?.timezone)
-                    bindDate(crmProject, 'date4', params.remove('date4'), currentUser?.timezone)
-                    bindData(crmProject, params)
-                    if (!crmProject.save(flush: true)) {
-                        ok = false
-                        tx.setRollbackOnly()
+        if (request.post) {
+            if (params.int('version') != null && crmProject.version > params.int('version')) {
+                crmProject.errors.rejectValue("version", "crmProject.optimistic.locking.failure",
+                        [message(code: 'crmProject.label', default: 'Project')] as Object[],
+                        "Another user has updated this project while you were editing")
+            } else {
+                def ok = false
+                try {
+                    crmProject = crmProjectService.save(crmProject, params)
+                    ok = !crmProject.hasErrors()
+                } catch (CrmValidationException e) {
+                    crmProject = (CrmProject) e[0]
+                } catch (Exception e) {
+                    // Re-attach object to this Hibernate session to avoid problems with uninitialized associations.
+                    if (!crmProject.isAttached()) {
+                        crmProject.discard()
+                        crmProject.attach()
                     }
+                    log.warn("Failed to save crmProject@$id", e)
+                    flash.error = e.message
                 }
 
+                /*
+                               def ok = true
+                               CrmProject.withTransaction { tx ->
+                                   //crmProjectService.fixCustomerParams(params)
+                                   bindData(crmProject, params, [include: CrmProject.BIND_WHITELIST, exclude: ['date1', 'date2', 'date3', 'date4']])
+                                   bindDate(crmProject, 'date1', params.date1, currentUser?.timezone)
+                                   bindDate(crmProject, 'date2', params.date2, currentUser?.timezone)
+                                   bindDate(crmProject, 'date3', params.date3, currentUser?.timezone)
+                                   bindDate(crmProject, 'date4', params.date4, currentUser?.timezone)
+                                   if (!crmProject.save(flush: true)) {
+                                       ok = false
+                                       tx.setRollbackOnly()
+                                   }
+                               }
+               */
                 if (ok) {
                     event(for: "crmProject", topic: "updated", fork: true, data: [id: crmProject.id, tenant: crmProject.tenantId, user: currentUser?.username])
                     flash.success = message(code: 'crmProject.updated.message', args: [message(code: 'crmProject.label', default: 'Project'), crmProject.toString()])
                     redirect action: 'show', id: crmProject.id
-                } else {
-                    def user = crmSecurityService.getUserInfo(params.username ?: crmProject.username)
-                    render view: 'edit', model: [crmProject: crmProject, metadata: metadata, user: user]
+                    return
                 }
-                break
+            }
         }
+
+        def metadata = [:]
+        metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
+        metadata.userList = crmSecurityService.getTenantUsers()
+        metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
+        metadata.vatList = getVatOptions()
+        def items = crmProject.items ?: []
+        [crmProject: crmProject, items: items.sort { it.orderIndex }, metadata: metadata, user: currentUser]
     }
 
     @Transactional
@@ -235,7 +268,7 @@ class CrmProjectController {
             def parentId = crmProject.parentId
             def tombstone = crmProjectService.deleteProject(crmProject)
             flash.warning = message(code: 'crmProject.deleted.message', args: [message(code: 'crmProject.label', default: 'Project'), tombstone])
-            if(parentId) {
+            if (parentId) {
                 redirect action: 'show', id: parentId, fragment: 'children'
             } else {
                 redirect action: 'index'
@@ -310,7 +343,7 @@ class CrmProjectController {
             redirect(action: 'show', id: id, fragment: "roles")
         } else {
             render template: 'editRole', model: [crmProject: crmProject, bean: roleInstance,
-                                                 roleTypes      : crmProjectService.listProjectRoleType(null)]
+                                                 roleTypes : crmProjectService.listProjectRoleType(null)]
         }
     }
 
@@ -389,7 +422,7 @@ class CrmProjectController {
 
     def autocompleteContact() {
         if (params.parent) {
-            if(pluginManager.hasGrailsPlugin('crmContactLite')) {
+            if (pluginManager.hasGrailsPlugin('crmContactLite')) {
                 params.parent = params.long('parent')
             } else {
                 params.related = params.parent

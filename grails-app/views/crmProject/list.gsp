@@ -16,18 +16,18 @@
     <tr>
         <g:sortableColumn property="number"
                           title="${message(code: 'crmProject.number.label', default: '#')}"/>
-        <g:sortableColumn property="customer.name"
-                          title="${message(code: 'crmProject.customer.label', default: 'Customer')}"/>
         <g:sortableColumn property="name"
                           title="${message(code: 'crmProject.name.label', default: 'Deal')}"/>
-
+        <g:sortableColumn property="customer.name"
+                                  title="${message(code: 'crmProject.customer.label', default: 'Customer')}"/>
         <g:sortableColumn property="status.name"
                           title="${message(code: 'crmProject.status.label', default: 'Status')}"/>
-
         <g:sortableColumn property="date2"
                           title="${message(code: 'crmProject.date2.label', default: 'Order Date')}"/>
-        <g:sortableColumn property="value"
-                          title="${message(code: 'crmProject.value.label', default: 'Value')}"/>
+        <g:sortableColumn property="budget" class="money"
+                          title="${message(code: 'crmProject.budget.label', default: 'Budget')}"/>
+        <g:sortableColumn property="actual" class="money"
+                          title="${message(code: 'crmProject.actual.label', default: 'Actual')}"/>
     </tr>
     </thead>
     <tbody>
@@ -42,13 +42,13 @@
 
             <td>
                 <select:link action="show" id="${crmProject.id}" selection="${selection}">
-                    ${fieldValue(bean: crmProject, field: "customer")}
+                    ${fieldValue(bean: crmProject, field: "name")}
                 </select:link>
             </td>
 
             <td>
                 <select:link action="show" id="${crmProject.id}" selection="${selection}">
-                    ${fieldValue(bean: crmProject, field: "name")}
+                    ${fieldValue(bean: crmProject, field: "customer")}
                 </select:link>
             </td>
 
@@ -61,7 +61,12 @@
             </td>
 
             <td class="money nowrap">
-                <g:formatNumber number="${crmProject.value}" maxFractionDigits="0"
+                <g:formatNumber number="${crmProject.budget}" maxFractionDigits="0"
+                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
+            </td>
+
+            <td class="money nowrap ${crmProject.diff < 0 ? 'negative' : 'positive'}">
+                <g:formatNumber number="${crmProject.actual}" maxFractionDigits="0"
                                 type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
             </td>
         </tr>

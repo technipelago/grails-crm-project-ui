@@ -1,3 +1,7 @@
+<g:set var="currencyCode" value="${bean.currency ?: 'EUR'}"/>
+<g:set var="budgetTotal" value="${0}"/>
+<g:set var="actualTotal" value="${0}"/>
+
 <table class="table table-striped">
     <thead>
     <tr>
@@ -6,11 +10,13 @@
         <th><g:message code="crmProject.status.label"/></th>
         <th><g:message code="crmProject.date1.label"/></th>
         <th><g:message code="crmProject.date2.label"/></th>
-        <th class="money"><g:message code="crmProject.value.label" default="Value"/></th>
+        <th class="money"><g:message code="crmProject.budget.label" default="Budget"/></th>
+        <th class="money"><g:message code="crmProject.actual.label" default="Actual"/></th>
+        <th class="money"><g:message code="crmProject.diff.label" default="Diff"/></th>
     </tr>
     </thead>
     <tbody>
-    <g:each in="${children}" var="crmProject">
+    <g:each in="${list}" var="crmProject">
         <tr class="${crmProject.active ? '' : 'disabled'}">
             <td>
                 <g:link controller="crmProject" action="show" id="${crmProject.id}">
@@ -35,12 +41,35 @@
                 <g:formatDate type="date" date="${crmProject.date2}"/>
             </td>
             <td class="money nowrap">
-                <g:formatNumber number="${crmProject.value}" maxFractionDigits="0"
+                <g:formatNumber number="${crmProject.budget}" maxFractionDigits="0"
+                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
+            </td>
+            <td class="money nowrap">
+                <g:formatNumber number="${crmProject.actual}" maxFractionDigits="0"
+                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
+            </td>
+            <td class="money nowrap">
+                <g:formatNumber number="${crmProject.diff}" maxFractionDigits="0"
                                 type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
             </td>
         </tr>
+        <g:set var="budgetTotal" value="${budgetTotal + crmProject.budget}"/>
+        <g:set var="actualTotal" value="${actualTotal + crmProject.actual}"/>
     </g:each>
     </tbody>
+    <tfoot>
+    <tr>
+        <th colspan="5"></th>
+        <th class="money nowrap"><g:formatNumber number="${budgetTotal}" maxFractionDigits="0"
+                                        type="currency" currencyCode="${currencyCode}"/></th>
+        <th class="money nowrap"><g:formatNumber number="${actualTotal}" maxFractionDigits="0"
+                                        type="currency" currencyCode="${currencyCode}"/></th>
+        <th class="money nowrap ${(budgetTotal - actualTotal) < 0 ? 'negative' : 'positive'}">
+            <g:formatNumber number="${budgetTotal - actualTotal}" maxFractionDigits="0"
+                                        type="currency" currencyCode="${currencyCode}"/>
+        </th>
+    </tr>
+    </tfoot>
 </table>
 
 <div class="form-actions btn-toolbar">

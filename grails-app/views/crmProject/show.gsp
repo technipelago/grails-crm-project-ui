@@ -101,6 +101,12 @@
                 <li class="active"><a href="#main" data-toggle="tab"><g:message code="crmProject.tab.main.label"/></a>
                 </li>
                 <li>
+                    <a href="#budget" data-toggle="tab">
+                        <g:message code="crmProject.tab.budget.label"/>
+                        <crm:countIndicator count="${items.size()}"/>
+                    </a>
+                </li>
+                <li>
                     <a href="#roles" data-toggle="tab">
                         <g:message code="crmProject.tab.roles.label"/>
                         <crm:countIndicator count="${roles.size()}"/>
@@ -192,14 +198,31 @@
 
                                 </g:if>
 
-                                <dt><g:message code="crmProject.value.label" default="Value"/></dt>
+                                <g:if test="${crmProject.budget}">
+                                    <dt><g:message code="crmProject.budget.label" default="Budget"/></dt>
 
-                                <dd>
-                                    <g:formatNumber number="${crmProject.value}"
-                                                    type="currency"
-                                                    currencyCode="${crmProject.currency ?: 'EUR'}"
-                                                    maxFractionDigits="0"/>
-                                </dd>
+                                    <dd>
+                                        <g:formatNumber number="${crmProject.budget}"
+                                                        type="currency"
+                                                        currencyCode="${crmProject.currency ?: 'EUR'}"
+                                                        maxFractionDigits="0"/>
+                                    </dd>
+
+                                    <dt><g:message code="crmProject.actual.label" default="Actual"/></dt>
+
+                                    <dd>
+                                        <g:formatNumber number="${crmProject.actual}"
+                                                        type="currency"
+                                                        currencyCode="${crmProject.currency ?: 'EUR'}"
+                                                        maxFractionDigits="0"/>
+
+                                        <span class="${crmProject.diff < 0 ? 'negative' : 'positive'}">
+                                        (<g:formatNumber number="${crmProject.diff}"
+                                                        type="currency" maxFractionDigits="0"
+                                                        currencyCode="${crmProject.currency ?: 'EUR'}"/>
+                                        = <g:formatNumber type="percent" number="${crmProject.actual / crmProject.budget}"/>)</span>
+                                    </dd>
+                                </g:if>
                             </dl>
 
                         </div>
@@ -338,6 +361,10 @@
 
                     </g:form>
 
+                </div>
+
+                <div class="tab-pane" id="budget">
+                    <tmpl:items bean="${crmProject}" list="${items}"/>
                 </div>
 
                 <div class="tab-pane" id="roles">

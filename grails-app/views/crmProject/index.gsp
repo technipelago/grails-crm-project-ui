@@ -23,6 +23,19 @@
                     });
                 }
             });
+            $("input[name='parent']").autocomplete("${createLink(action: 'autocompleteProject', params: [max: 20])}", {
+                remoteDataType: 'json',
+                useCache: false,
+                filter: false,
+                minChars: 1,
+                preventDefaultReturn: true,
+                selectFirst: true,
+                processData: function(data) {
+                    return $.map(data, function(v, i) {
+                        return {label: v[0], value: v[0]};
+                    });
+                }
+            });
             $("input[name='username']").autocomplete("${createLink(action: 'autocompleteUsername', params: [max: 20])}", {
                 remoteDataType: 'json',
                 useCache: false,
@@ -69,7 +82,7 @@
                 </label>
 
                 <div class="controls">
-                    <g:textField name="name.label" value="${cmd.name}" class="span12" autofocus=""/>
+                    <g:textField name="name" value="${cmd.name}" class="span12" autofocus=""/>
                 </div>
             </div>
 
@@ -83,6 +96,16 @@
                 </div>
             </div>
 
+            <div class="control-group">
+                <label class="control-label">
+                    <g:message code="crmProject.parent.label"/>
+                </label>
+
+                <div class="controls">
+                    <g:textField name="parent" value="${cmd.parent}" class="span12" autocomplete="off"/>
+                </div>
+            </div>
+
         </div>
 
         <div class="span3">
@@ -92,7 +115,7 @@
                 </label>
 
                 <div class="controls">
-                    <g:textField name="customer" value="${cmd.customer}" class="span12"/>
+                    <g:textField name="customer" value="${cmd.customer}" class="span12" autocomplete="off"/>
                 </div>
             </div>
 
@@ -102,7 +125,7 @@
                 </label>
 
                 <div class="controls">
-                    <g:textField name="username" value="${cmd.username}" class="span12"/>
+                    <g:textField name="username" value="${cmd.username}" class="span12" autocomplete="off"/>
                 </div>
             </div>
 
@@ -127,7 +150,7 @@
                 </label>
 
                 <div class="controls">
-                    <g:textField name="tags" value="${cmd.tags}" class="span12"/>
+                    <g:textField name="tags" value="${cmd.tags}" class="span12" autocomplete="off"/>
                 </div>
             </div>
         </div>
