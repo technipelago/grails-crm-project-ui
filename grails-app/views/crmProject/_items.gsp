@@ -42,16 +42,15 @@
     </tbody>
     <tfoot>
     <tr>
-        <td></td>
-        <td></td>
-        <td class="money nowrap"><g:formatNumber number="${budgetTotal}" maxFractionDigits="0"
-                                        type="currency" currencyCode="${currencyCode}"/></td>
-        <td class="money nowrap"><g:formatNumber number="${actualTotal}" maxFractionDigits="0"
-                                        type="currency" currencyCode="${currencyCode}"/></td>
-        <td class="money nowrap ${(budgetTotal - actualTotal) < 0 ? 'negative' : 'positive'}">
+        <th colspan="2"></th>
+        <th class="money nowrap"><g:formatNumber number="${budgetTotal}" maxFractionDigits="0"
+                                        type="currency" currencyCode="${currencyCode}"/></th>
+        <th class="money nowrap"><g:formatNumber number="${actualTotal}" maxFractionDigits="0"
+                                        type="currency" currencyCode="${currencyCode}"/></th>
+        <th class="money nowrap ${(budgetTotal - actualTotal) < 0 ? 'negative' : 'positive'}">
             <g:formatNumber number="${budgetTotal - actualTotal}" maxFractionDigits="0"
                                         type="currency" currencyCode="${currencyCode}"/>
-        </td>
+        </th>
     </tr>
     </tfoot>
 </table>
