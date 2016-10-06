@@ -14,6 +14,7 @@ class CrmProjectQueryCommand implements Serializable{
     String manager
     String username
     String tags
+    String ref
     String date1
     String date2
     String date3

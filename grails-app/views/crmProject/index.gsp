@@ -75,7 +75,7 @@
 
     <div class="row-fluid">
 
-        <div class="span3">
+        <div class="span4">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.name.label"/>
@@ -106,9 +106,19 @@
                 </div>
             </div>
 
+            <div class="control-group">
+                <label class="control-label">
+                    <g:message code="crmProject.ref.label"/>
+                </label>
+
+                <div class="controls">
+                    <g:textField name="ref" value="${cmd.ref}" class="span12" autocomplete="off"/>
+                </div>
+            </div>
+
         </div>
 
-        <div class="span3">
+        <div class="span4">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.customer.label"/>
@@ -129,9 +139,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <div class="span3">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.status.label"/>
@@ -155,7 +162,9 @@
             </div>
         </div>
 
-        <div class="span3">
+
+
+        <div class="span4">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.date1.label"/>
