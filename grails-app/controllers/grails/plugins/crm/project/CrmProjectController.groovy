@@ -121,7 +121,6 @@ class CrmProjectController {
         if (!params.currency) {
             params.currency = crmTenant.getOption('currency') ?: (grailsApplication.config.crm.currency.default ?: 'EUR')
         }
-        def reference = params.reference ? crmCoreService.getReference(params.reference) : null
         def metadata = [:]
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
@@ -135,6 +134,9 @@ class CrmProjectController {
                 bindDate(crmProject, 'date2', params.date2, currentUser?.timezone)
                 bindDate(crmProject, 'date3', params.date3, currentUser?.timezone)
                 bindDate(crmProject, 'date4', params.date4, currentUser?.timezone)
+                if (params.reference) {
+                    crmProject.setReference(params.reference)
+                }
                 crmProject.tenantId = tenant
                 if (!crmProject.username) {
                     crmProject.username = currentUser?.username
@@ -150,7 +152,7 @@ class CrmProjectController {
                 def items = crmProject.items ?: []
                 return [crmProject: crmProject, items: items.sort { it.orderIndex },
                         metadata  : metadata, user: currentUser,
-                        reference : reference, customer: customer, contact: contact]
+                        reference : crmProject.reference, customer: customer, contact: contact]
             case 'POST':
                 def customer
                 def contact
@@ -175,7 +177,7 @@ class CrmProjectController {
                     def user = crmSecurityService.getUserInfo(params.username ?: crmProject.username)
                     render view: 'create', model: [crmProject: crmProject, items: items.sort { it.orderIndex },
                                                    metadata  : metadata, user: user,
-                                                   reference : reference, customer: customer, contact: contact]
+                                                   reference : crmProject.reference, customer: customer, contact: contact]
                 }
                 break
         }
@@ -215,21 +217,6 @@ class CrmProjectController {
                     flash.error = e.message
                 }
 
-                /*
-                               def ok = true
-                               CrmProject.withTransaction { tx ->
-                                   //crmProjectService.fixCustomerParams(params)
-                                   bindData(crmProject, params, [include: CrmProject.BIND_WHITELIST, exclude: ['date1', 'date2', 'date3', 'date4']])
-                                   bindDate(crmProject, 'date1', params.date1, currentUser?.timezone)
-                                   bindDate(crmProject, 'date2', params.date2, currentUser?.timezone)
-                                   bindDate(crmProject, 'date3', params.date3, currentUser?.timezone)
-                                   bindDate(crmProject, 'date4', params.date4, currentUser?.timezone)
-                                   if (!crmProject.save(flush: true)) {
-                                       ok = false
-                                       tx.setRollbackOnly()
-                                   }
-                               }
-               */
                 if (ok) {
                     event(for: "crmProject", topic: "updated", fork: true, data: [id: crmProject.id, tenant: crmProject.tenantId, user: currentUser?.username])
                     flash.success = message(code: 'crmProject.updated.message', args: [message(code: 'crmProject.label', default: 'Project'), crmProject.toString()])
@@ -245,7 +232,9 @@ class CrmProjectController {
         metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
         metadata.vatList = getVatOptions()
         def items = crmProject.items ?: []
-        [crmProject: crmProject, items: items.sort { it.orderIndex }, metadata: metadata, user: currentUser]
+        [crmProject: crmProject, items: items.sort { it.orderIndex },
+         customer  : crmProject.customer, reference: crmProject.reference,
+         metadata  : metadata, user: currentUser]
     }
 
     @Transactional
@@ -458,6 +447,16 @@ class CrmProjectController {
         }
         def result = [q: params.q, timestamp: System.currentTimeMillis(), length: list.size(), more: false, results: list]
         WebUtils.defaultCache(response)
+        render result as JSON
+    }
+
+    def autocompleteReference(Long id, String q) {
+        def user = crmSecurityService.getUserInfo()
+        def result = event(for: 'crmProject', topic: 'autocomplete',
+                data: [tenant  : TenantUtils.tenant, id: id, property: 'ref', query: q,
+                       username: user.username, locale: request.locale]).waitFor(10000)?.values?.flatten() ?: []
+        result = result.collect { [it.text, it.id] }.sort { it[0] }
+        WebUtils.shortCache(response)
         render result as JSON
     }
 

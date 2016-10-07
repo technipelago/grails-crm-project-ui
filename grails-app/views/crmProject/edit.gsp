@@ -27,6 +27,23 @@
             }
         });
 
+        // Reference.
+        $("input[name='referenceName']").autocomplete("${createLink(controller: 'crmProject', action: 'autocompleteReference')}", {
+            remoteDataType: 'json',
+            preventDefaultReturn: true,
+            minChars: 1,
+            selectFirst: true,
+            useCache: false,
+            filter: false,
+            extraParams: { id: "${crmProject.id}"},
+            onItemSelect: function(item) {
+                $("input[name='reference']").val(item.data[0]);
+            },
+            onNoMatch: function() {
+                $("input[name='reference']").val('');
+            }
+        });
+
         $('a[data-toggle="tab"]').on('shown', function (ev) {
             //ev.target // activated tab
             //ev.relatedTarget // previous tab
@@ -38,8 +55,8 @@
 
 <body>
 
-<crm:header title="crmProject.edit.title" subtitle="${crmProject.customer?.encodeAsHTML()}"
-            args="[entityName, crmProject]"/>
+<crm:header title="crmProject.edit.title" subtitle="${reference ?: customer}"
+            args="[entityName, crmProject, reference, customer]"/>
 
 <g:hasErrors bean="${crmProject}">
     <crm:alert class="alert-error">
@@ -105,6 +122,16 @@
                                 <div class="controls">
                                     <input type="hidden" name="parent.id" value="${crmProject.parent?.id}"/>
                                     <g:textField name="parent.name" value="${crmProject.parent?.name}" class="span12" autocomplete="off"/>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <g:message code="crmProject.ref.label"/>
+                                </label>
+                                <div class="controls">
+                                    <input type="hidden" name="reference" value="${crmProject.ref}"/>
+                                    <g:textField name="referenceName" value="${reference}" class="span12" autocomplete="off"/>
                                 </div>
                             </div>
                         </div>
