@@ -152,6 +152,20 @@
                                                 id="${crmProject.parentId}"><g:fieldValue bean="${crmProject}"
                                                                                              field="parent"/></g:link></dd>
                                 </g:if>
+
+                                <g:if test="${crmProject.type}">
+                                    <dt><g:message code="crmProject.type.label" default="Type"/></dt>
+
+                                    <dd><g:fieldValue bean="${crmProject}" field="type"/></dd>
+
+                                </g:if>
+
+                                <g:if test="${crmProject.category}">
+                                    <dt><g:message code="crmProject.category.label" default="Category"/></dt>
+
+                                    <dd><g:fieldValue bean="${crmProject}" field="category"/></dd>
+
+                                </g:if>
                             </dl>
                         </div>
 

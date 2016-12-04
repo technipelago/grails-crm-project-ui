@@ -168,7 +168,7 @@
                                         <g:message code="crmProject.parent.label"/>
                                     </label>
                                     <div class="controls">
-                                        <input type="hidden" name="parent.id" value="${crmProject.parent?.id}"/>
+                                        <input type="hidden" name="parent.id" value="${crmProject.parentId}"/>
                                         <g:textField name="parent.name" value="${crmProject.parent?.name}" class="span12" autocomplete="off"/>
                                     </div>
                                 </div>
@@ -215,7 +215,31 @@
                                     <div class="controls">
                                         <g:select name="status.id" from="${metadata.statusList}"
                                                   optionKey="id"
-                                                  value="${crmProject.status?.id}" class="span12"/>
+                                                  value="${crmProject.statusId}" class="span12"/>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="control-label">
+                                        <g:message code="crmProject.type.label"/>
+                                    </label>
+
+                                    <div class="controls">
+                                        <g:select name="type.id" from="${metadata.typeList}"
+                                                  optionKey="id" noSelection="['': '']"
+                                                  value="${crmProject.typeId}" class="span12"/>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="control-label">
+                                        <g:message code="crmProject.category.label"/>
+                                    </label>
+
+                                    <div class="controls">
+                                        <g:select name="category.id" from="${metadata.categoryList}"
+                                                  optionKey="id" noSelection="['': '']"
+                                                  value="${crmProject.categoryId}" class="span12"/>
                                     </div>
                                 </div>
 

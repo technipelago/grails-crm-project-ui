@@ -123,6 +123,8 @@ class CrmProjectController {
         }
         def metadata = [:]
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
+        metadata.typeList = CrmProjectType.findAllByEnabledAndTenantId(true, tenant)
+        metadata.categoryList = CrmProjectCategory.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
         metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
         metadata.vatList = getVatOptions()
@@ -228,6 +230,8 @@ class CrmProjectController {
 
         def metadata = [:]
         metadata.statusList = CrmProjectStatus.findAllByEnabledAndTenantId(true, tenant)
+        metadata.typeList = CrmProjectType.findAllByEnabledAndTenantId(true, tenant)
+        metadata.categoryList = CrmProjectCategory.findAllByEnabledAndTenantId(true, tenant)
         metadata.userList = crmSecurityService.getTenantUsers()
         metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
         metadata.vatList = getVatOptions()

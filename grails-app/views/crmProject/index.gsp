@@ -1,4 +1,4 @@
-<%@ page import="grails.plugins.crm.core.TenantUtils; grails.plugins.crm.project.CrmProject; grails.plugins.crm.project.CrmProjectStatus" %>
+<%@ page import="grails.plugins.crm.project.CrmProjectCategory; grails.plugins.crm.project.CrmProjectType; grails.plugins.crm.core.TenantUtils; grails.plugins.crm.project.CrmProject; grails.plugins.crm.project.CrmProjectStatus" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -75,7 +75,7 @@
 
     <div class="row-fluid">
 
-        <div class="span4">
+        <div class="span3">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.name.label"/>
@@ -118,7 +118,7 @@
 
         </div>
 
-        <div class="span4">
+        <div class="span3">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.customer.label"/>
@@ -138,6 +138,11 @@
                     <g:textField name="username" value="${cmd.username}" class="span12" autocomplete="off"/>
                 </div>
             </div>
+        </div>
+
+
+
+        <div class="span3">
 
             <div class="control-group">
                 <label class="control-label">
@@ -153,6 +158,30 @@
 
             <div class="control-group">
                 <label class="control-label">
+                    <g:message code="crmProject.type.label"/>
+                </label>
+
+                <div class="controls">
+                    <g:select from="${grails.plugins.crm.project.CrmProjectType.findAllByTenantId(TenantUtils.tenant)}"
+                              name="type"
+                              optionKey="name" class="span12" noSelection="['': '']"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <g:message code="crmProject.category.label"/>
+                </label>
+
+                <div class="controls">
+                    <g:select from="${grails.plugins.crm.project.CrmProjectCategory.findAllByTenantId(TenantUtils.tenant)}"
+                              name="category"
+                              optionKey="name" class="span12" noSelection="['': '']"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
                     <g:message code="crmProjectQueryCommand.tags.label"/>
                 </label>
 
@@ -160,11 +189,10 @@
                     <g:textField name="tags" value="${cmd.tags}" class="span12" autocomplete="off"/>
                 </div>
             </div>
+
         </div>
 
-
-
-        <div class="span4">
+        <div class="span3">
             <div class="control-group">
                 <label class="control-label">
                     <g:message code="crmProject.date1.label"/>

@@ -20,6 +20,8 @@
                           title="${message(code: 'crmProject.name.label', default: 'Deal')}"/>
         <g:sortableColumn property="customer.name"
                                   title="${message(code: 'crmProject.customer.label', default: 'Customer')}"/>
+        <g:sortableColumn property="type.name"
+                          title="${message(code: 'crmProject.type.label', default: 'Type')}"/>
         <g:sortableColumn property="status.name"
                           title="${message(code: 'crmProject.status.label', default: 'Status')}"/>
         <g:sortableColumn property="date2"
@@ -50,6 +52,10 @@
                 <select:link action="show" id="${crmProject.id}" selection="${selection}">
                     ${fieldValue(bean: crmProject, field: "customer")}
                 </select:link>
+            </td>
+
+            <td>
+                ${fieldValue(bean: crmProject, field: "type")}
             </td>
 
             <td>
