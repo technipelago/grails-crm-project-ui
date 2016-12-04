@@ -75,7 +75,7 @@ class CrmProjectTypeController {
                     render view: 'create', model: [crmProjectType: crmProjectType]
                     return
                 }
-                flash.success = message(code: 'crmProjectType.created.message', args: [message(code: 'crmProjectType.label', default: 'Status'), crmProjectType.toString()])
+                flash.success = message(code: 'crmProjectType.created.message', args: [message(code: 'crmProjectType.label', default: 'Type'), crmProjectType.toString()])
                 redirect action: 'list'
                 break
         }
@@ -86,7 +86,7 @@ class CrmProjectTypeController {
             case 'GET':
                 def crmProjectType = domainClass.get(params.id)
                 if (!crmProjectType) {
-                    flash.error = message(code: 'crmProjectType.not.found.message', args: [message(code: 'crmProjectType.label', default: 'Status'), params.id])
+                    flash.error = message(code: 'crmProjectType.not.found.message', args: [message(code: 'crmProjectType.label', default: 'Type'), params.id])
                     redirect action: 'list'
                     return
                 }
@@ -95,7 +95,7 @@ class CrmProjectTypeController {
             case 'POST':
                 def crmProjectType = domainClass.get(params.id)
                 if (!crmProjectType) {
-                    flash.error = message(code: 'crmProjectType.not.found.message', args: [message(code: 'crmProjectType.label', default: 'Status'), params.id])
+                    flash.error = message(code: 'crmProjectType.not.found.message', args: [message(code: 'crmProjectType.label', default: 'Type'), params.id])
                     redirect action: 'list'
                     return
                 }
@@ -104,8 +104,8 @@ class CrmProjectTypeController {
                     def version = params.version.toLong()
                     if (crmProjectType.version > version) {
                         crmProjectType.errors.rejectValue('version', 'crmProjectType.optimistic.locking.failure',
-                                [message(code: 'crmProjectType.label', default: 'Status')] as Object[],
-                                "Another user has updated this Status while you were editing")
+                                [message(code: 'crmProjectType.label', default: 'Type')] as Object[],
+                                "Another user has updated this Type while you were editing")
                         render view: 'edit', model: [crmProjectType: crmProjectType]
                         return
                     }
@@ -118,7 +118,7 @@ class CrmProjectTypeController {
                     return
                 }
 
-                flash.success = message(code: 'crmProjectType.updated.message', args: [message(code: 'crmProjectType.label', default: 'Status'), crmProjectType.toString()])
+                flash.success = message(code: 'crmProjectType.updated.message', args: [message(code: 'crmProjectType.label', default: 'Type'), crmProjectType.toString()])
                 redirect action: 'list'
                 break
         }
@@ -127,7 +127,7 @@ class CrmProjectTypeController {
     def delete() {
         def crmProjectType = domainClass.get(params.id)
         if (!crmProjectType) {
-            flash.error = message(code: 'crmProjectType.not.found.message', args: [message(code: 'crmProjectType.label', default: 'Status'), params.id])
+            flash.error = message(code: 'crmProjectType.not.found.message', args: [message(code: 'crmProjectType.label', default: 'Type'), params.id])
             redirect action: 'list'
             return
         }
@@ -140,21 +140,21 @@ class CrmProjectTypeController {
         try {
             def tombstone = crmProjectType.toString()
             crmProjectType.delete(flush: true)
-            flash.warning = message(code: 'crmProjectType.deleted.message', args: [message(code: 'crmProjectType.label', default: 'Status'), tombstone])
+            flash.warning = message(code: 'crmProjectType.deleted.message', args: [message(code: 'crmProjectType.label', default: 'Type'), tombstone])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-            flash.error = message(code: 'crmProjectType.not.deleted.message', args: [message(code: 'crmProjectType.label', default: 'Status'), params.id])
+            flash.error = message(code: 'crmProjectType.not.deleted.message', args: [message(code: 'crmProjectType.label', default: 'Type'), params.id])
             redirect action: 'edit', id: params.id
         }
     }
 
-    private boolean isInUse(CrmProjectType status) {
-        def count = CrmProject.countByStatus(status)
+    private boolean isInUse(CrmProjectType type) {
+        def count = CrmProject.countByType(type)
         def rval = false
         if (count) {
             flash.error = message(code: "crmProjectType.delete.error.reference", args:
-                    [message(code: 'crmProjectType.label', default: ' Status'),
+                    [message(code: 'crmProjectType.label', default: ' Type'),
                             message(code: 'crmProject.label', default: ' Project'), count],
                     default: "This {0} is used by {1} {2}")
             rval = true

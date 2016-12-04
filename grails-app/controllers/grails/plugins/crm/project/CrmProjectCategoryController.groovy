@@ -75,7 +75,7 @@ class CrmProjectCategoryController {
                     render view: 'create', model: [crmProjectCategory: crmProjectCategory]
                     return
                 }
-                flash.success = message(code: 'crmProjectCategory.created.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), crmProjectCategory.toString()])
+                flash.success = message(code: 'crmProjectCategory.created.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), crmProjectCategory.toString()])
                 redirect action: 'list'
                 break
         }
@@ -86,7 +86,7 @@ class CrmProjectCategoryController {
             case 'GET':
                 def crmProjectCategory = domainClass.get(params.id)
                 if (!crmProjectCategory) {
-                    flash.error = message(code: 'crmProjectCategory.not.found.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), params.id])
+                    flash.error = message(code: 'crmProjectCategory.not.found.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), params.id])
                     redirect action: 'list'
                     return
                 }
@@ -95,7 +95,7 @@ class CrmProjectCategoryController {
             case 'POST':
                 def crmProjectCategory = domainClass.get(params.id)
                 if (!crmProjectCategory) {
-                    flash.error = message(code: 'crmProjectCategory.not.found.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), params.id])
+                    flash.error = message(code: 'crmProjectCategory.not.found.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), params.id])
                     redirect action: 'list'
                     return
                 }
@@ -104,8 +104,8 @@ class CrmProjectCategoryController {
                     def version = params.version.toLong()
                     if (crmProjectCategory.version > version) {
                         crmProjectCategory.errors.rejectValue('version', 'crmProjectCategory.optimistic.locking.failure',
-                                [message(code: 'crmProjectCategory.label', default: 'Status')] as Object[],
-                                "Another user has updated this Status while you were editing")
+                                [message(code: 'crmProjectCategory.label', default: 'Category')] as Object[],
+                                "Another user has updated this Category while you were editing")
                         render view: 'edit', model: [crmProjectCategory: crmProjectCategory]
                         return
                     }
@@ -118,7 +118,7 @@ class CrmProjectCategoryController {
                     return
                 }
 
-                flash.success = message(code: 'crmProjectCategory.updated.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), crmProjectCategory.toString()])
+                flash.success = message(code: 'crmProjectCategory.updated.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), crmProjectCategory.toString()])
                 redirect action: 'list'
                 break
         }
@@ -127,7 +127,7 @@ class CrmProjectCategoryController {
     def delete() {
         def crmProjectCategory = domainClass.get(params.id)
         if (!crmProjectCategory) {
-            flash.error = message(code: 'crmProjectCategory.not.found.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), params.id])
+            flash.error = message(code: 'crmProjectCategory.not.found.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), params.id])
             redirect action: 'list'
             return
         }
@@ -140,21 +140,21 @@ class CrmProjectCategoryController {
         try {
             def tombstone = crmProjectCategory.toString()
             crmProjectCategory.delete(flush: true)
-            flash.warning = message(code: 'crmProjectCategory.deleted.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), tombstone])
+            flash.warning = message(code: 'crmProjectCategory.deleted.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), tombstone])
             redirect action: 'list'
         }
         catch (DataIntegrityViolationException e) {
-            flash.error = message(code: 'crmProjectCategory.not.deleted.message', args: [message(code: 'crmProjectCategory.label', default: 'Status'), params.id])
+            flash.error = message(code: 'crmProjectCategory.not.deleted.message', args: [message(code: 'crmProjectCategory.label', default: 'Category'), params.id])
             redirect action: 'edit', id: params.id
         }
     }
 
-    private boolean isInUse(CrmProjectCategory status) {
-        def count = CrmProject.countByStatus(status)
+    private boolean isInUse(CrmProjectCategory cat) {
+        def count = CrmProject.countByCategory(cat)
         def rval = false
         if (count) {
             flash.error = message(code: "crmProjectCategory.delete.error.reference", args:
-                    [message(code: 'crmProjectCategory.label', default: ' Status'),
+                    [message(code: 'crmProjectCategory.label', default: ' Category'),
                             message(code: 'crmProject.label', default: ' Project'), count],
                     default: "This {0} is used by {1} {2}")
             rval = true
