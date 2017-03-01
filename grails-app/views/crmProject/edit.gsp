@@ -361,7 +361,7 @@
                                     style="width: 99%"/>
                             </td>
                             <td style="width: 10%;">
-                                <g:select name="items[${i}].vat" from="${metadata.vatList}" value="${formatNumber(number:items[i]?.vat, minFractionDigits: 2)}"
+                                <g:select name="items[${i}].vat" from="${metadata.vatList}" value="${formatNumber(number: metadata.vat, minFractionDigits: 2)}"
                                           optionKey="${{formatNumber(number:it.value, minFractionDigits: 2)}}" optionValue="label" style="width:99%;"/>
                             </td>
                         </tr>
