@@ -18,6 +18,8 @@
                           title="${message(code: 'crmProject.number.label', default: '#')}"/>
         <g:sortableColumn property="name"
                           title="${message(code: 'crmProject.name.label', default: 'Deal')}"/>
+        <g:sortableColumn property="ref"
+                                  title="${message(code: 'crmProject.ref.label', default: 'Reference')}"/>
         <g:sortableColumn property="customer.name"
                                   title="${message(code: 'crmProject.customer.label', default: 'Customer')}"/>
         <g:sortableColumn property="type.name"
@@ -50,6 +52,12 @@
 
             <td>
                 <select:link action="show" id="${crmProject.id}" selection="${selection}">
+                    ${crmProject.reference}
+                </select:link>
+            </td>
+
+            <td>
+                <select:link action="show" id="${crmProject.id}" selection="${selection}">
                     ${fieldValue(bean: crmProject, field: "customer")}
                 </select:link>
             </td>
@@ -68,12 +76,12 @@
 
             <td class="money nowrap">
                 <g:formatNumber number="${crmProject.budget}" maxFractionDigits="0"
-                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
+                                type="currency" currencyCode="${crmProject.currency ?: defaultCurrency}"/>
             </td>
 
             <td class="money nowrap ${crmProject.diff < 0 ? 'negative' : 'positive'}">
                 <g:formatNumber number="${crmProject.actual}" maxFractionDigits="0"
-                                type="currency" currencyCode="${crmProject.currency ?: 'EUR'}"/>
+                                type="currency" currencyCode="${crmProject.currency ?: defaultCurrency}"/>
             </td>
         </tr>
     </g:each>
