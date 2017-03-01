@@ -54,11 +54,13 @@ class CrmProjectController {
             if (result.totalCount == 1 && params.view != 'list') {
                 redirect action: "show", params: selectionService.createSelectionParameters(uri) + [id: result.head().ident()]
             } else {
-                [crmProjectList: result, crmProjectTotal: result.totalCount, selection: uri]
+                [crmProjectList: result, crmProjectTotal: result.totalCount, selection: uri,
+                 defaultCurrency: grailsApplication.config.crm.currency.default ?: 'EUR']
             }
         } catch (Exception e) {
             flash.error = e.message
-            [crmProjectList: [], crmProjectTotal: 0, selection: uri]
+            [crmProjectList: [], crmProjectTotal: 0, selection: uri,
+             defaultCurrency: grailsApplication.config.crm.currency.default ?: 'EUR']
         }
     }
 
@@ -235,6 +237,7 @@ class CrmProjectController {
         metadata.userList = crmSecurityService.getTenantUsers()
         metadata.currencyList = ['SEK', 'EUR', 'GBP', 'USD']
         metadata.vatList = getVatOptions()
+        metadata.vat = grailsApplication.config.crm.currency.vat.default ?: 0
         def items = crmProject.items ?: []
         [crmProject: crmProject, items: items.sort { it.orderIndex },
          customer  : crmProject.customer, reference: crmProject.reference,
