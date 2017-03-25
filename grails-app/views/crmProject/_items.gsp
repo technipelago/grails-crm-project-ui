@@ -5,8 +5,9 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <th><g:message code="crmProjectItem.orderIndex.label"/></th>
+        <th>Rad</th>
         <th><g:message code="crmProjectItem.name.label"/></th>
+        <th><g:message code="crmProjectItem.comment.label"/></th>
         <th class="money"><g:message code="crmProjectItem.budget.label"/></th>
         <th class="money"><g:message code="crmProjectItem.actual.label"/></th>
         <th class="money"><g:message code="crmProjectItem.diff.label"/></th>
@@ -18,8 +19,11 @@
             <td style="width: 5%;">
                 <g:fieldValue bean="${item}" field="orderIndex"/>
             </td>
-            <td style="width: 45%;">
+            <td style="width: 35%;">
                 <g:fieldValue bean="${item}" field="name"/>
+            </td>
+            <td style="width: 25%;">
+                <g:fieldValue bean="${item}" field="comment"/>
             </td>
             <td class="money nowrap">
                 <g:formatNumber number="${item.budget}" maxFractionDigits="0"
@@ -42,7 +46,7 @@
     </tbody>
     <tfoot>
     <tr>
-        <th colspan="2"></th>
+        <th colspan="3"></th>
         <th class="money nowrap"><g:formatNumber number="${budgetTotal}" maxFractionDigits="0"
                                         type="currency" currencyCode="${currencyCode}"/></th>
         <th class="money nowrap"><g:formatNumber number="${actualTotal}" maxFractionDigits="0"
