@@ -309,6 +309,7 @@
                         <th>Rad</th>
                         <th><g:message code="crmProjectItem.name.label" default="Name"/></th>
                         <th><g:message code="crmProjectItem.comment.label" default="Comment"/></th>
+                        <th><g:message code="crmProjectItem.category.label" default="Category"/></th>
                         <th><g:message code="crmProjectItem.budget.label" default="Budget"/></th>
                         <th><g:message code="crmProjectItem.actual.label" default="Actual"/></th>
                         <th><g:message code="crmProjectItem.vat.label" default="VAT"/></th>
@@ -324,13 +325,17 @@
                                 <g:textField name="items[${i}].orderIndex" value="${item.orderIndex}"
                                     style="width: 99%"/>
                             </td>
-                            <td style="width: 35%;">
+                            <td style="width: 30%;">
                                 <g:textField name="items[${i}].name" value="${item.name}"
                                     style="width: 99%"/>
                             </td>
-                            <td style="width: 25%;">
+                            <td style="width: 20%;">
                                 <g:textField name="items[${i}].comment" value="${item.comment}"
                                     style="width: 99%"/>
+                            </td>
+                            <td style="width: 10%;">
+                                <g:select name="items[${i}].category.id" value="${item.categoryId}"
+                                    from="${metadata.categoryList}" optionKey="id" noSelection="${['': '']}" style="width: 99%"/>
                             </td>
                             <td>
                                 <g:textField name="items[${i}].budget" value="${fieldValue(bean: item, field: 'budget')}"
@@ -353,13 +358,17 @@
                                 <g:textField name="items[${i}].orderIndex" value="${items[i]?.orderIndex}"
                                     style="width: 99%"/>
                             </td>
-                            <td style="width: 35%;">
+                            <td style="width: 30%;">
                                 <g:textField name="items[${i}].name" value="${items[i]?.name}"
                                     style="width: 99%"/>
                             </td>
-                            <td style="width: 25%;">
+                            <td style="width: 20%;">
                                 <g:textField name="items[${i}].comment" value="${items[i]?.comment}"
                                     style="width: 99%"/>
+                            </td>
+                            <td style="width: 10%;">
+                                <g:select name="items[${i}].category.id" value="${items[i]?.categoryId}"
+                                    from="${metadata.categoryList}" optionKey="id" noSelection="${['': '']}" style="width: 99%"/>
                             </td>
                             <td>
                                 <g:textField name="items[${i}].budget" value="${formatNumber(number: items[i]?.budget)}"
