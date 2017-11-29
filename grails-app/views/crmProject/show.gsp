@@ -5,7 +5,8 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmProject.label', default: 'Project')}"/>
     <title><g:message code="crmProject.show.title" args="[entityName, crmProject]"/></title>
-    <r:require module="select2"/>
+    <r:require modules="select2,timeline"/>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <r:script>
         $(document).ready(function () {
             $("a.crm-change-status").click(function(ev) {
@@ -120,6 +121,12 @@
                         </a>
                     </li>
                 </g:if>
+                <li>
+                    <a href="#timeline" data-toggle="tab">
+                        <g:message code="crmProject.tab.timeline.label"/>
+                        <crm:countIndicator count="${0}"/>
+                    </a>
+                </li>
                 <crm:pluginViews location="tabs" var="view">
                     <crm:pluginTab id="${view.id}" label="${view.label}" count="${view.model?.totalCount}"/>
                 </crm:pluginViews>
@@ -403,6 +410,10 @@
                         <tmpl:children bean="${crmProject}" list="${children}"/>
                     </div>
                 </g:if>
+
+                <div class="tab-pane" id="timeline">
+                    <tmpl:timeline bean="${crmProject}"/>
+                </div>
 
                 <crm:pluginViews location="tabs" var="view">
                     <div class="tab-pane tab-${view.id}" id="${view.id}">
