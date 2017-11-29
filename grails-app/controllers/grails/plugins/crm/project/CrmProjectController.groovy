@@ -98,9 +98,8 @@ class CrmProjectController {
 
         [crmProject : crmProject, items: items.sort { it.orderIndex }, children: children.sort { it.number },
          reference  : crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
-         metadata   : metadata, roles: crmProject.roles.sort {
-            it.type.orderIndex
-        }, selection: params.getSelectionURI()]
+         metadata   : metadata, roles: crmProject.roles.sort { it.type.orderIndex }, selection: params.getSelectionURI(),
+         timeline   : (grailsApplication.config.crm.project.timeline ?: false)]
     }
 
     private List getVatOptions() {
