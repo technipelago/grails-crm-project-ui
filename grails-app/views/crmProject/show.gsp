@@ -5,13 +5,7 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmProject.label', default: 'Project')}"/>
     <title><g:message code="crmProject.show.title" args="[entityName, crmProject]"/></title>
-    <g:if test="${timeline}">
-        <r:require modules="select2,timeline"/>
-        <script type="text/javascript" src="//www.google.com/jsapi"></script>
-    </g:if>
-    <g:else>
-        <r:require module="select2"/>
-    </g:else>
+    <r:require module="select2"/>
     <r:script>
         $(document).ready(function () {
             $("a.crm-change-status").click(function(ev) {
@@ -123,14 +117,6 @@
                         <a href="#children" data-toggle="tab">
                             <g:message code="crmProject.tab.children.label"/>
                             <crm:countIndicator count="${children.size()}"/>
-                        </a>
-                    </li>
-                </g:if>
-                <g:if test="${timeline}">
-                    <li>
-                        <a href="#timeline" data-toggle="tab">
-                            <g:message code="crmProject.tab.timeline.label"/>
-                            <crm:countIndicator count="${0}"/>
                         </a>
                     </li>
                 </g:if>
@@ -415,12 +401,6 @@
                 <g:if test="${children}">
                     <div class="tab-pane" id="children">
                         <tmpl:children bean="${crmProject}" list="${children}"/>
-                    </div>
-                </g:if>
-
-                <g:if test="${timeline}">
-                    <div class="tab-pane" id="timeline">
-                        <tmpl:timeline bean="${crmProject}"/>
                     </div>
                 </g:if>
 

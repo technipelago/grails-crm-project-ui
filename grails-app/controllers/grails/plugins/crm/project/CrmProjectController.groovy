@@ -3,9 +3,7 @@ package grails.plugins.crm.project
 import grails.converters.JSON
 import grails.plugins.crm.core.*
 import grails.transaction.Transactional
-import groovy.transform.CompileStatic
 import org.springframework.dao.DataIntegrityViolationException
-import grails.plugins.crm.task.CrmTask
 
 import javax.servlet.http.HttpServletResponse
 import java.util.concurrent.TimeoutException
@@ -96,10 +94,9 @@ class CrmProjectController {
         def metadata = [statusList: crmProjectService.listProjectStatus(null)]
         def items = crmProject.items ?: []
 
-        [crmProject : crmProject, items: items.sort { it.orderIndex }, children: children.sort { it.number },
-         reference  : crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
-         metadata   : metadata, roles: crmProject.roles.sort { it.type.orderIndex }, selection: params.getSelectionURI(),
-         timeline   : (grailsApplication.config.crm.project.timeline ?: false)]
+        [crmProject: crmProject, items: items.sort { it.orderIndex }, children: children.sort { it.number },
+         reference : crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
+         metadata  : metadata, roles: crmProject.roles.sort { it.type.orderIndex }, selection: params.getSelectionURI()]
     }
 
     private List getVatOptions() {
@@ -525,51 +522,5 @@ class CrmProjectController {
                     data: [tenant: TenantUtils.tenant, username: user.username, uri: uri, locale: request.locale]).waitFor(10000)?.values?.flatten()
             [layouts: layouts, selection: uri]
         }
-    }
-
-    def events(Long id) {
-        def projects
-        if (params.q) {
-            def baseURI = new URI('bean://crmProjectService/list')
-            def query = params.getSelectionQuery()
-            def uri = params.getSelectionURI() ?: selectionService.addQuery(baseURI, query)
-
-            params.max = Math.min(params.max ? params.int('max') : 10, 100)
-            params.sort = 'number'
-            params.order = 'asc'
-            projects = selectionService.select(uri, params)
-        } else if(id) {
-            projects = [crmProjectService.getProject(id)]
-        } else {
-            projects = CrmProject.withCriteria {
-                eq('tenantId', TenantUtils.tenant)
-                status {
-                    lt('orderIndex', 9) // TODO better handling of enabled/disabled agreement status
-                }
-                order('number', 'asc')
-                order('dateCreated', 'asc')
-            }
-        }
-
-        def refs = projects.collect { crmCoreService.getReferenceIdentifier(it) }
-
-        def activities = CrmTask.createCriteria().list() {
-            eq('tenantId', TenantUtils.tenant)
-            isNotNull('startTime')
-            isNotNull('endTime')
-            inList('ref', refs)
-        }
-        def result = activities.collect { task ->
-            def project = crmCoreService.getReference(task.ref)
-            def content = """<h4>${g.link(controller: 'crmTask', action: 'show', id: task.id, task.name)} <small>${project.name}</small></h4>"""
-            return [start: task.startTime, end: task.endTime, group: task.id.toString(), content: content, className: getTaskColor(task)]
-        }
-        WebUtils.shortCache(response)
-        render result as JSON
-    }
-
-    @CompileStatic
-    private String getTaskColor(CrmTask task) {
-        task.isCompleted() ? 'complete' : ''
     }
 }

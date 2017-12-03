@@ -70,7 +70,7 @@
 <div class="form-actions">
     <select:link action="list" selection="${selection}" class="btn">
         <i class="icon-remove"></i>
-        <g:message code="crmTask.button.back.label" default="Back"/>
+        <g:message code="crmProject.button.back.label" default="Back"/>
     </select:link>
 </div>
 
