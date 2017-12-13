@@ -280,7 +280,7 @@
 
                                 <div class="controls">
 
-                                    <g:textField name="value" readonly="${crmProject.budgetEditable ? false : true}"
+                                    <g:textField name="actual" readonly="${crmProject.budgetEditable ? false : true}"
                                                  value="${fieldValue(bean: crmProject, field: 'actual')}"
                                                  class="span8"/>
                                 </div>
