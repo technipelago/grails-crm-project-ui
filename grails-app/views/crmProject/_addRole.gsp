@@ -33,7 +33,7 @@
             <label class="control-label"><g:message code="crmProjectRole.description.label"/></label>
 
             <div class="controls">
-                <g:textArea name="description" value="${bean.description}" cols="70" rows="3" class="input-xlarge"/>
+                <g:textArea name="description" value="${bean.description}" cols="70" rows="3" class="input-xxlarge"/>
             </div>
         </div>
     </div>
