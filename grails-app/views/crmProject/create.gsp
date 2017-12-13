@@ -144,12 +144,31 @@
                         <div class="span3">
                             <div class="row-fluid">
                                 <div class="control-group">
+                                    <label class="control-label"><g:message code="crmProject.customer.label"/></label>
+                                    <div class="controls">
+                                        <g:textField name="customer.name" value="${customer?.name}"
+                                                     autocomplete="off" autocorrect="off" spellcheck="false" autofocus="" class="span12"/>
+                                        <g:hiddenField name="customer.id" value="${customer?.id}"/>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label"><g:message code="crmProject.contact.label"/></label>
+                                    <div class="controls">
+                                        <g:textField name="contact.name"
+                                                     value="${contact?.name}"
+                                                     autocomplete="off" autocorrect="off" spellcheck="false"
+                                                     class="span12"/>
+                                        <g:hiddenField name="contact.id"
+                                                       value="${contact?.id}"/>
+                                    </div>
+                                </div>
+                                <div class="control-group">
                                     <label class="control-label">
                                         <g:message code="crmProject.name.label"/>
                                     </label>
 
                                     <div class="controls">
-                                        <g:textField name="name" value="${crmProject.name}" class="span12" autofocus=""/>
+                                        <g:textField name="name" value="${crmProject.name}" class="span12"/>
                                     </div>
                                 </div>
 
@@ -187,25 +206,6 @@
 
                         <div class="span3">
                             <div class="row-fluid">
-                                <div class="control-group">
-                                    <label class="control-label"><g:message code="crmProject.customer.label"/></label>
-                                    <div class="controls">
-                                        <g:textField name="customer.name" value="${customer?.name}"
-                                                     autocomplete="off" class="span12"/>
-                                        <g:hiddenField name="customer.id" value="${customer?.id}"/>
-                                    </div>
-                                </div>
-                                <div class="control-group">
-                                    <label class="control-label"><g:message code="crmProject.contact.label"/></label>
-                                    <div class="controls">
-                                        <g:textField name="contact.name"
-                                                     value="${contact?.name}"
-                                                     autocomplete="off"
-                                                     class="span12"/>
-                                        <g:hiddenField name="contact.id"
-                                                       value="${contact?.id}"/>
-                                    </div>
-                                </div>
 
                                 <div class="control-group">
                                     <label class="control-label">
