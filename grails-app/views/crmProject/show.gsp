@@ -92,7 +92,7 @@
             <h1>
                 ${crmProject}
                 <crm:favoriteIcon bean="${crmProject}"/>
-                <small>${reference ?: customer}</small>
+                <small>${(reference ?: parent) ?: customer}</small>
             </h1>
         </header>
 
@@ -131,13 +131,6 @@
                         <div class="span4">
                             <dl>
 
-                                <g:if test="${crmProject.name}">
-                                    <dt><g:message code="crmProject.name.label" default="Name"/></dt>
-
-                                    <dd><g:fieldValue bean="${crmProject}" field="name"/></dd>
-
-                                </g:if>
-
                                 <g:if test="${crmProject.number}">
                                     <dt><g:message code="crmProject.number.label" default="Number"/></dt>
 
@@ -145,12 +138,25 @@
 
                                 </g:if>
 
+                                <g:if test="${crmProject.name}">
+                                    <dt><g:message code="crmProject.name.label" default="Name"/></dt>
+
+                                    <dd><g:fieldValue bean="${crmProject}" field="name"/></dd>
+
+                                </g:if>
+
                                 <g:if test="${crmProject.parent}">
                                     <dt><g:message code="crmProject.parent.label" default="Main project"/></dt>
 
-                                    <dd><g:link action="show"
+                                    <dd><g:link action="show" fragment="children"
                                                 id="${crmProject.parentId}"><g:fieldValue bean="${crmProject}"
                                                                                              field="parent"/></g:link></dd>
+                                </g:if>
+
+                                <g:if test="${reference}">
+                                    <dt><g:message code="crmProject.ref.label" default="Reference"/></dt>
+                                    <dd><crm:referenceLink reference="${reference}"/></dd>
+
                                 </g:if>
 
                                 <g:if test="${crmProject.type}">
@@ -203,12 +209,6 @@
                                 <g:if test="${crmProject.username}">
                                     <dt><g:message code="crmProject.username.label" default="Responsible"/></dt>
                                     <dd><crm:user username="${crmProject.username}">${name}</crm:user></dd>
-
-                                </g:if>
-
-                                <g:if test="${reference}">
-                                    <dt><g:message code="crmProject.ref.label" default="Reference"/></dt>
-                                    <dd><crm:referenceLink reference="${reference}"/></dd>
 
                                 </g:if>
 
@@ -324,12 +324,19 @@
                                 </ul>
                             </crm:button>
 
-                            <crm:button type="link" group="true" action="create"
-                                        visual="success" icon="icon-file icon-white"
-                                        label="crmProject.button.create.label"
-                                        title="crmProject.button.create.help"
-                                        permission="crmProject:create">
-                            </crm:button>
+                            <crm:hasPermission permission="crmProject:create">
+                                <div class="btn-group">
+                                    <button class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                                        <i class="icon-file icon-white"></i>
+                                        <g:message code="crmProject.button.create.label" default="New project"/>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><g:link action="create"><g:message code="crmProject.button.create.parent.label" default="New main project"/></g:link></li>
+                                        <li><g:link action="create" params="${['parent.id': crmProject.id]}"><g:message code="crmProject.button.create.child.label" default="New main project"/></g:link></li>
+                                    </ul>
+                                </div>
+                            </crm:hasPermission>
 
                             <div class="btn-group">
                                 <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">

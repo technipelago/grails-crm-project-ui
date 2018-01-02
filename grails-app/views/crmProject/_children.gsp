@@ -73,22 +73,10 @@
 </table>
 
 <div class="form-actions btn-toolbar">
-    <crm:button type="link" group="true" action="create" visual="success"
-                icon="icon-file icon-white"
-                label="crmProject.button.create.label"
-                title="crmProject.button.create.help"
+    <crm:button type="link" group="true" action="create" params="${['parent.id': bean.id]}"
+                visual="success" icon="icon-file icon-white"
+                label="crmProject.button.create.child.label"
+                title="crmProject.button.create.child.help"
                 permission="crmProject:create">
-        <g:unless test="${bean.parent}">
-            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li>
-                    <g:link action="create" params="${['parent.id': bean.id]}">
-                        <g:message code="crmProject.button.create.sub.label" default="New sub-project"/>
-                    </g:link>
-                </li>
-            </ul>
-        </g:unless>
     </crm:button>
 </div>

@@ -90,11 +90,11 @@ class CrmProjectController {
             redirect action: 'list'
             return
         }
-        def children = crmProject.children ?: []
         def metadata = [statusList: crmProjectService.listProjectStatus(null)]
-        def items = crmProject.items ?: []
+        def children = crmProject.children ? crmProject.children.sort { it.number } : []
+        def items = crmProject.items ? crmProject.items.sort { it.orderIndex } : []
 
-        [crmProject: crmProject, items: items.sort { it.orderIndex }, children: children.sort { it.number },
+        [crmProject: crmProject, items: items, parent: crmProject.parent, children: children,
          reference : crmProject.reference, customer: crmProject.customer, contact: crmProject.contact,
          metadata  : metadata, roles: crmProject.roles.sort { it.type.orderIndex }, selection: params.getSelectionURI()]
     }
@@ -136,6 +136,29 @@ class CrmProjectController {
                 bindDate(crmProject, 'date2', params.date2, currentUser?.timezone)
                 bindDate(crmProject, 'date3', params.date3, currentUser?.timezone)
                 bindDate(crmProject, 'date4', params.date4, currentUser?.timezone)
+
+                def parentProject = crmProject.parent
+                if (parentProject) {
+                    if (parentProject.date1 && !crmProject.date1) {
+                        crmProject.date1 = parentProject.date1
+                    }
+                    if (parentProject.date2 && !crmProject.date2) {
+                        crmProject.date2 = parentProject.date2
+                    }
+                    if (parentProject.date3 && !crmProject.date3) {
+                        crmProject.date3 = parentProject.date3
+                    }
+                    if (parentProject.date4 && !crmProject.date4) {
+                        crmProject.date4 = parentProject.date4
+                    }
+                    if (parentProject.type && !crmProject.type) {
+                        crmProject.type = parentProject.type
+                    }
+                    if (parentProject.category && !crmProject.category) {
+                        crmProject.category = parentProject.category
+                    }
+                }
+
                 if (params.reference) {
                     crmProject.setReference(params.reference)
                 }
@@ -150,9 +173,13 @@ class CrmProjectController {
                     if (customerId) {
                         customer = crmContactService.getContact(customerId)
                     }
+                    if (!customer) {
+                        customer = parentProject?.customer
+                        contact = parentProject?.contact
+                    }
                 }
                 def items = crmProject.items ?: []
-                return [crmProject: crmProject, items: items.sort { it.orderIndex },
+                return [crmProject: crmProject, parent: parentProject, items: items.sort { it.orderIndex },
                         metadata  : metadata, user: currentUser,
                         reference : crmProject.reference, customer: customer, contact: contact]
             case 'POST':
@@ -177,7 +204,7 @@ class CrmProjectController {
                 } else {
                     def items = crmProject.items ?: []
                     def user = crmSecurityService.getUserInfo(params.username ?: crmProject.username)
-                    render view: 'create', model: [crmProject: crmProject, items: items.sort { it.orderIndex },
+                    render view: 'create', model: [crmProject: crmProject, parent: crmProject.parent, items: items.sort { it.orderIndex },
                                                    metadata  : metadata, user: user,
                                                    reference : crmProject.reference, customer: customer, contact: contact]
                 }

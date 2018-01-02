@@ -106,8 +106,8 @@
 
 <body>
 
-<crm:header title="crmProject.create.title" subtitle="${reference ?: customer}"
-            args="[entityName, crmProject, reference, customer]"/>
+<crm:header title="${parent ? 'crmProject.create.child.title' : 'crmProject.create.title'}" subtitle="${(reference ?: parent) ?: customer}"
+            args="[entityName, crmProject, reference, parent, customer]"/>
 
 <g:hasErrors bean="${crmProject}">
     <crm:alert class="alert-error">
@@ -172,35 +172,29 @@
                                     </div>
                                 </div>
 
-                                <div class="control-group">
-                                    <label class="control-label">
-                                        <g:message code="crmProject.number.label"/>
-                                    </label>
-
-                                    <div class="controls">
-                                        <g:textField name="number" value="${crmProject.number}" class="span8"/>
+                                <g:unless test="${reference}">
+                                    <div class="control-group">
+                                        <label class="control-label">
+                                            <g:message code="crmProject.parent.label"/>
+                                        </label>
+                                        <div class="controls">
+                                            <input type="hidden" name="parent.id" value="${crmProject.parentId}"/>
+                                            <g:textField name="parent.name" value="${crmProject.parent?.name}" class="span12" autocomplete="off"/>
+                                        </div>
                                     </div>
-                                </div>
+                                </g:unless>
 
-                                <div class="control-group">
-                                    <label class="control-label">
-                                        <g:message code="crmProject.parent.label"/>
-                                    </label>
-                                    <div class="controls">
-                                        <input type="hidden" name="parent.id" value="${crmProject.parentId}"/>
-                                        <g:textField name="parent.name" value="${crmProject.parent?.name}" class="span12" autocomplete="off"/>
+                                <g:unless test="${parent}">
+                                    <div class="control-group">
+                                        <label class="control-label">
+                                            <g:message code="crmProject.ref.label"/>
+                                        </label>
+                                        <div class="controls">
+                                            <input type="hidden" name="reference" value="${crmProject.ref}"/>
+                                            <g:textField name="referenceName" value="${reference}" class="span12" autocomplete="off"/>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="control-group">
-                                    <label class="control-label">
-                                        <g:message code="crmProject.ref.label"/>
-                                    </label>
-                                    <div class="controls">
-                                        <input type="hidden" name="reference" value="${crmProject.ref}"/>
-                                        <g:textField name="referenceName" value="${reference}" class="span12" autocomplete="off"/>
-                                    </div>
-                                </div>
+                                </g:unless>
                             </div>
                         </div>
 
@@ -326,6 +320,17 @@
 
                         <div class="span3">
                             <div class="row-fluid">
+
+                                <div class="control-group">
+                                    <label class="control-label">
+                                        <g:message code="crmProject.number.label"/>
+                                    </label>
+
+                                    <div class="controls">
+                                        <g:textField name="number" value="${crmProject.number}" class="span8"/>
+                                    </div>
+                                </div>
+
                                 <f:field property="budget" label="crmProject.budget.label">
                                     <g:textField name="budget"
                                                  value="${fieldValue(bean: crmProject, field: 'budget')}"
