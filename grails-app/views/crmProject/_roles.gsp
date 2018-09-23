@@ -7,6 +7,7 @@
         <th><g:message code="crmContact.email.label" default="Email"/></th>
         <th><g:message code="crmProjectRole.type.label" default="Role"/></th>
         <th><g:message code="crmProjectRole.description.label" default="Description"/></th>
+        <th style="width:16px;"></th>
     </tr>
     </thead>
     <tbody>
@@ -16,9 +17,6 @@
         <tr>
 
             <td>
-                <a class="crm-edit" data-crm-id="${role.id}" href="#" title="Click to edit role details">
-                    <i class="icon-pencil"></i>
-                </a>
                 <g:link mapping="crm-contact-show" id="${crmContact.id}">
                     ${fieldValue(bean: crmContact, field: "name")}
                 </g:link>
@@ -38,7 +36,11 @@
 
             <td>${StringUtils.abbreviate(role.description ?: '', 40)}</td>
 
-
+            <td style="width:16px;">
+                <a class="crm-edit" data-crm-id="${role.id}" href="#" title="Click to edit role details">
+                    <i class="icon-pencil"></i>
+                </a>
+            </td>
         </tr>
     </g:each>
     </tbody>
