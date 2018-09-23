@@ -92,7 +92,7 @@
             <h1>
                 ${crmProject}
                 <crm:favoriteIcon bean="${crmProject}"/>
-                <small>${(reference ?: parent) ?: customer}</small>
+                <small>${parent ? (parent.name +  ' -') : ''} ${reference ?: customer}</small>
             </h1>
         </header>
 
@@ -100,12 +100,14 @@
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#main" data-toggle="tab"><g:message code="crmProject.tab.main.label"/></a>
                 </li>
-                <li>
-                    <a href="#budget" data-toggle="tab">
-                        <g:message code="crmProject.tab.budget.label"/>
-                        <crm:countIndicator count="${items.size()}"/>
-                    </a>
-                </li>
+                <g:if test="${items}">
+                    <li>
+                        <a href="#budget" data-toggle="tab">
+                            <g:message code="crmProject.tab.budget.label"/>
+                            <crm:countIndicator count="${items.size()}"/>
+                        </a>
+                    </li>
+                </g:if>
                 <li>
                     <a href="#roles" data-toggle="tab">
                         <g:message code="crmProject.tab.roles.label"/>
@@ -212,11 +214,14 @@
 
                                 </g:if>
 
-                                <g:if test="${crmProject.budget}">
+                                <g:set var="totalBudget" value="${crmProject.totalBudget}"/>
+                                <g:set var="totalActual" value="${crmProject.totalActual}"/>
+                                <g:set var="totalDiff" value="${crmProject.totalDiff}"/>
+                                <g:if test="${totalBudget}">
                                     <dt><g:message code="crmProject.budget.label" default="Budget"/></dt>
 
                                     <dd>
-                                        <g:formatNumber number="${crmProject.budget}"
+                                        <g:formatNumber number="${totalBudget}"
                                                         type="currency"
                                                         currencyCode="${crmProject.currency ?: 'EUR'}"
                                                         maxFractionDigits="0"/>
@@ -225,16 +230,16 @@
                                     <dt><g:message code="crmProject.actual.label" default="Actual"/></dt>
 
                                     <dd>
-                                        <g:formatNumber number="${crmProject.actual}"
+                                        <g:formatNumber number="${totalActual}"
                                                         type="currency"
                                                         currencyCode="${crmProject.currency ?: 'EUR'}"
                                                         maxFractionDigits="0"/>
 
-                                        <span class="${crmProject.diff < 0 ? 'negative' : 'positive'}">
-                                        (<g:formatNumber number="${crmProject.diff}"
+                                        <span class="${totalDiff < 0 ? 'negative' : 'positive'}">
+                                        (<g:formatNumber number="${totalDiff}"
                                                         type="currency" maxFractionDigits="0"
                                                         currencyCode="${crmProject.currency ?: 'EUR'}"/>
-                                        = <g:formatNumber type="percent" number="${crmProject.actual / crmProject.budget}"/>)</span>
+                                        = <g:formatNumber type="percent" number="${totalActual / totalBudget}"/>)</span>
                                     </dd>
                                 </g:if>
                             </dl>
@@ -384,9 +389,11 @@
 
                 </div>
 
-                <div class="tab-pane" id="budget">
-                    <tmpl:items bean="${crmProject}" list="${items}"/>
-                </div>
+                <g:if test="${items}">
+                    <div class="tab-pane" id="budget">
+                        <tmpl:items bean="${crmProject}" list="${items}"/>
+                    </div>
+                </g:if>
 
                 <div class="tab-pane" id="roles">
                     <tmpl:roles bean="${crmProject}" list="${roles}"/>
