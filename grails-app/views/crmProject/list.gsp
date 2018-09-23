@@ -54,7 +54,7 @@
 
             <td>
                 <select:link action="show" id="${crmProject.id}" selection="${selection}">
-                    ${crmProject.reference}
+                    ${crmProject.reference ?: crmProject.parent?.reference}
                 </select:link>
             </td>
 
