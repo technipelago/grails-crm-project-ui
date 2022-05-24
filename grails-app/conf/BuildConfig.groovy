@@ -37,17 +37,17 @@ grails.project.dependency.resolution = {
             export = false
         }
 
-        test(":codenarc:0.25.2") { export = false }
+        test(":codenarc:0.26.0") { export = false }
         test(":code-coverage:2.0.3-3") { export = false }
 
-        compile ":selection:0.9.8"
+        compile ":selection:0.9.9"
         compile ":selection-repository:0.9.3"
-        compile ":recent-domain:0.6.0"
-        compile ":decorator:1.1"
-        compile ":user-tag:0.6"
+        compile ":recent-domain:0.6.1"
+        compile ":decorator:1.1.1"
+        compile ":user-tag:1.0.1"
 
-        compile ":crm-ui-bootstrap:2.4.2"
-        compile ":crm-contact-ui:2.4.3"
-        compile ":crm-project:2.4.1-SNAPSHOT"
+        compile ":crm-ui-bootstrap:2.4.4"
+        compile ":crm-contact-ui:2.4.7"
+        compile ":crm-project:2.4.1"
     }
 }
